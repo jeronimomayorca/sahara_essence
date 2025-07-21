@@ -24,6 +24,20 @@ interface Perfume {
   image: string
 }
 
+// Hook de debounce
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+  return debouncedValue
+}
+
 export default function CatalogPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedBrand, setSelectedBrand] = useState("Todas")
@@ -32,6 +46,8 @@ export default function CatalogPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 400)
+
   useEffect(() => {
     fetch("/perfumes.json")
       .then((res) => res.json())
@@ -39,28 +55,46 @@ export default function CatalogPage() {
       .catch(() => setPerfumes([]))
   }, [])
 
-  const brands = [
+  // Memoizar los arrays de filtros
+  const brands = useMemo(() => [
     "Todas",
     ...Array.from(new Set(perfumes.map((p) => p.brand)))
-  ]
-  const genders = ["Todos", ...Array.from(new Set(perfumes.map((p) => p.gender)))]
-  const families = [
+  ], [perfumes])
+  const genders = useMemo(() => [
+    "Todos",
+    ...Array.from(new Set(perfumes.map((p) => p.gender)))
+  ], [perfumes])
+  const families = useMemo(() => [
     "Todas",
     ...Array.from(new Set(perfumes.map((p) => p.family)))
-  ]
+  ], [perfumes])
 
   const filteredPerfumes = useMemo(() => {
     return perfumes.filter((perfume) => {
       const matchesSearch =
-        perfume.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        perfume.brand.toLowerCase().includes(searchTerm.toLowerCase())
+        perfume.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        perfume.brand.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       const matchesBrand = selectedBrand === "Todas" || perfume.brand === selectedBrand
       const matchesGender = selectedGender === "Todos" || perfume.gender === selectedGender
       const matchesFamily = selectedFamily === "Todas" || perfume.family === selectedFamily
 
       return matchesSearch && matchesBrand && matchesGender && matchesFamily
     })
-  }, [searchTerm, selectedBrand, selectedGender, selectedFamily, perfumes])
+  }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily, perfumes])
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const perfumesPerPage = 12
+  const totalPages = Math.ceil(filteredPerfumes.length / perfumesPerPage)
+  const paginatedPerfumes = useMemo(() => {
+    const start = (currentPage - 1) * perfumesPerPage
+    return filteredPerfumes.slice(start, start + perfumesPerPage)
+  }, [filteredPerfumes, currentPage])
+
+  // Resetear página al cambiar filtros o búsqueda
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily])
 
   const clearFilters = () => {
     setSelectedBrand("Todas")
@@ -168,7 +202,7 @@ export default function CatalogPage() {
             </div>
 
             {/* Desktop Filters */}
-            <div className="hidden md:flex items-center gap-4 flex-wrap justify-center">
+            <div className="hidden md:flex items-center gap-4 flex-wrap justify-between">
             <span className="font-inter">Filtrar por:</span>
               <h2 className="font-inter">Marca</h2>
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
@@ -217,13 +251,15 @@ export default function CatalogPage() {
                   Limpiar ({activeFiltersCount})
                 </Button>
               )}
-            </div>
+
 
             {/* Results Count */}
             <p className="font-inter text-sm text-muted-foreground text-end">
               {filteredPerfumes.length} perfume{filteredPerfumes.length !== 1 ? "s" : ""} encontrado
               {filteredPerfumes.length !== 1 ? "s" : ""}
             </p>
+            </div>
+
           </div>
         </div>
       </div>
@@ -231,25 +267,19 @@ export default function CatalogPage() {
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={`${searchTerm}-${selectedBrand}-${selectedGender}-${selectedFamily}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          >
-            {filteredPerfumes.map((perfume) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {paginatedPerfumes.map((perfume) => (
               <motion.div
                 key={perfume.id}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: perfume.id * 0.1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
               >
                 <Link href={`/catalog/${perfume.id}`}>
                   <Card className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card">
                     <CardContent className="p-0">
-                      <div className="relative aspect-[3/4] overflow-hidden">
+                      <div className="relative aspect-[3/3] overflow-hidden">
                         <Image
                           src={perfume.image || "/placeholder.svg"}
                           alt={perfume.name}
@@ -312,7 +342,7 @@ export default function CatalogPage() {
                 </Link>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </AnimatePresence>
 
         {filteredPerfumes.length === 0 && (
@@ -326,6 +356,30 @@ export default function CatalogPage() {
               Limpiar todos los filtros
             </Button>
           </motion.div>
+        )}
+
+        {filteredPerfumes.length > perfumesPerPage && (
+          <div className="flex justify-center mt-8 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </Button>
+            <span className="px-3 py-2 text-sm font-inter">
+              Página {currentPage} de {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Siguiente
+            </Button>
+          </div>
         )}
       </div>
     </div>

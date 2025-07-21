@@ -18,9 +18,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "SAHARA ESSENCE - Perfumes de Lujo",
-  description: "Descubre la elegancia en cada gota. Perfumes de lujo que definen tu esencia única.",
-    generator: 'v0.dev'
+  title: "Sahara Essence | Explora la mayor Selección de Perfumes Online | Descubre +300 Fragancias para hombre y mujer",
+  description: "Descubre nuestra colección curada de más de 300 perfumes. Encuentra tu aroma ideal entre fragancias de diseñador y nicho para hombre y mujer. Envíos a todo el país."
 }
 
 export default function RootLayout({
