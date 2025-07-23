@@ -191,7 +191,7 @@ export default function PerfumeDetailPage() {
                 <Badge variant="outline" className="mb-4 font-inter font-medium">
                   {perfume.brand}
                 </Badge>
-                <h1 className="font-playfair font-bold text-4xl md:text-6xl mb-4 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
+                <h1 className="font-playfair font-bold text-4xl md:text-6xl mb-4 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text">
                   {perfume.name}
                 </h1>
                 <p className="font-inter text-xl text-muted-foreground mb-6">{perfume.description}</p>
