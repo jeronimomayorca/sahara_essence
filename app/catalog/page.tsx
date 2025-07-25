@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Search, Filter, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -38,15 +39,43 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue
 }
 
+// Fisher-Yates shuffle algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 export default function CatalogPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedBrand, setSelectedBrand] = useState("Todas")
-  const [selectedGender, setSelectedGender] = useState("Todos")
-  const [selectedFamily, setSelectedFamily] = useState("Todas")
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  
+  // Initialize state from URL search params or use defaults
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '')
+  const [selectedBrand, setSelectedBrand] = useState(() => searchParams.get('brand') || 'Todas')
+  const [selectedGender, setSelectedGender] = useState(() => searchParams.get('gender') || 'Todos')
+  const [selectedFamily, setSelectedFamily] = useState(() => searchParams.get('family') || 'Todas')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
+  
+  // Update URL when search or filters change
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (searchTerm) params.set('q', searchTerm)
+    if (selectedBrand !== 'Todas') params.set('brand', selectedBrand)
+    if (selectedGender !== 'Todos') params.set('gender', selectedGender)
+    if (selectedFamily !== 'Todas') params.set('family', selectedFamily)
+    
+    // Use replace instead of push to avoid adding to browser history for each change
+    const queryString = params.toString()
+    const newUrl = queryString ? `?${queryString}` : '/catalog'
+    window.history.replaceState({}, '', newUrl)
+  }, [searchTerm, selectedBrand, selectedGender, selectedFamily])
 
   useEffect(() => {
     fetch("/perfumes.json")
@@ -82,14 +111,16 @@ export default function CatalogPage() {
     })
   }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily, perfumes])
 
+  const shuffledPerfumes = useMemo(() => shuffleArray(filteredPerfumes), [filteredPerfumes])
+
   // Paginación
   const [currentPage, setCurrentPage] = useState(1)
   const perfumesPerPage = 12
-  const totalPages = Math.ceil(filteredPerfumes.length / perfumesPerPage)
+  const totalPages = Math.ceil(shuffledPerfumes.length / perfumesPerPage)
   const paginatedPerfumes = useMemo(() => {
     const start = (currentPage - 1) * perfumesPerPage
-    return filteredPerfumes.slice(start, start + perfumesPerPage)
-  }, [filteredPerfumes, currentPage])
+    return shuffledPerfumes.slice(start, start + perfumesPerPage)
+  }, [shuffledPerfumes, currentPage])
 
   // Resetear página al cambiar filtros o búsqueda
   useEffect(() => {
@@ -101,6 +132,8 @@ export default function CatalogPage() {
     setSelectedGender("Todos")
     setSelectedFamily("Todas")
     setSearchTerm("")
+    // Clear URL parameters when clearing filters
+    window.history.replaceState({}, '', '/catalog')
   }
 
   const activeFiltersCount =

@@ -172,11 +172,18 @@ export default function PerfumeDetailPage() {
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
               className="relative"
             >
-              <div className="perfume-image relative aspect-[3/4] max-w-md mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-200/20 to-amber-200/20 dark:from-emerald-800/20 dark:to-amber-800/20 rounded-3xl transform rotate-3"></div>
-                <div className="relative bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-2xl">
-                  <Image src={perfume.image || "/placeholder.svg"} alt={perfume.name} fill className="object-contain" />
+              <div className="relative aspect-[3/4] max-w-md mx-auto overflow-hidden rounded-3xl shadow-2xl">
+                <div className="absolute inset-0">
+                  <Image 
+                    src={perfume.image || "/placeholder.svg"} 
+                    alt={perfume.name} 
+                    fill 
+                    className="object-fill"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
+                  />
                 </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-200/20 to-amber-200/20 dark:from-emerald-800/20 dark:to-amber-800/20 rounded-3xl transform rotate-3 pointer-events-none" />
               </div>
             </motion.div>
 
