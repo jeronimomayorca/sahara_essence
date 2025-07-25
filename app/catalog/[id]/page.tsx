@@ -178,7 +178,7 @@ export default function PerfumeDetailPage() {
                     src={perfume.image || "/placeholder.svg"} 
                     alt={perfume.name} 
                     fill 
-                    className="object-fill"
+                    className="object-contain rounded-3xl"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority
                   />
