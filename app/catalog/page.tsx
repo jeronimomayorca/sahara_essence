@@ -44,7 +44,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
 }
@@ -52,7 +52,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 export default function CatalogPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  
+
   // Initialize state from URL search params or use defaults
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '')
   const [selectedBrand, setSelectedBrand] = useState(() => searchParams.get('brand') || 'Todas')
@@ -62,7 +62,7 @@ export default function CatalogPage() {
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
-  
+
   // Update URL when search or filters change
   useEffect(() => {
     const params = new URLSearchParams()
@@ -70,7 +70,7 @@ export default function CatalogPage() {
     if (selectedBrand !== 'Todas') params.set('brand', selectedBrand)
     if (selectedGender !== 'Todos') params.set('gender', selectedGender)
     if (selectedFamily !== 'Todas') params.set('family', selectedFamily)
-    
+
     // Use replace instead of push to avoid adding to browser history for each change
     const queryString = params.toString()
     const newUrl = queryString ? `?${queryString}` : '/catalog'
@@ -146,7 +146,7 @@ export default function CatalogPage() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col gap-4">
-            
+
 
             {/* Search Bar */}
             <div className="relative">
@@ -235,9 +235,9 @@ export default function CatalogPage() {
             </div>
 
             {/* Desktop Filters */}
-            <div className="hidden md:flex items-center gap-4 flex-wrap justify-between">
-            <span className="font-inter">Filtrar por:</span>
-              <h2 className="font-inter">Marca</h2>
+            <div className="hidden md:flex items-center gap-3 flex-wrap justify-between">
+              <span className="font-playfair overline">Filtrar por:</span>
+              <h2 className="font-playfair text-emerald-600 dark:text-emerald-400">Marca</h2>
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Marca" />
@@ -250,7 +250,7 @@ export default function CatalogPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <h2>Genero</h2>
+              <h2 className="font-playfair text-md text-emerald-600 dark:text-emerald-400">Genero</h2>
               <Select value={selectedGender} onValueChange={setSelectedGender}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Género" />
@@ -264,7 +264,7 @@ export default function CatalogPage() {
                 </SelectContent>
               </Select>
 
-              <h2>Familia Olfativa</h2>
+              <h2 className="font-playfair text-md text-emerald-600 dark:text-emerald-400">Familia Olfativa</h2>
               <Select value={selectedFamily} onValueChange={setSelectedFamily}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Familia Olfativa" />
@@ -286,11 +286,11 @@ export default function CatalogPage() {
               )}
 
 
-            {/* Results Count */}
-            <p className="font-inter text-sm text-muted-foreground text-end">
-              {filteredPerfumes.length} perfume{filteredPerfumes.length !== 1 ? "s" : ""} encontrado
-              {filteredPerfumes.length !== 1 ? "s" : ""}
-            </p>
+              {/* Results Count */}
+              <p className="font-inter text-sm text-muted-foreground text-end">
+                {filteredPerfumes.length} perfume{filteredPerfumes.length !== 1 ? "s" : ""} encontrado
+                {filteredPerfumes.length !== 1 ? "s" : ""}
+              </p>
             </div>
 
           </div>
