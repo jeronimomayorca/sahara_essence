@@ -4,6 +4,7 @@ import { Playfair_Display, Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navigation } from "@/components/navigation"
+import AIChatButton from "@/components/AIChatButton"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Navigation />
           <main className="pt-16">{children}</main>
+          <AIChatButton />
         </ThemeProvider>
       </body>
     </html>
