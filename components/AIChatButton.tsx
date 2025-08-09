@@ -62,7 +62,7 @@ export default function AIChatButton() {
       if (!response.ok) throw new Error('Error al conectar con el asistente');
 
       const data = await response.json();
-      
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: data.reply || 'Lo siento, no pude procesar tu solicitud.',
@@ -87,14 +87,15 @@ export default function AIChatButton() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen ? (
           <motion.div
+            key="chat-panel"
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="relative w-80 h-[500px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
+            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+            transition={{ type: 'tween', duration: 0.2 }}
+            className="relative w-[86vw] sm:w-96 md:w-[28rem] max-w-[90vw] h-[80vh] max-h-[600px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-4 text-white flex justify-between items-center">
@@ -129,10 +130,10 @@ export default function AIChatButton() {
                       'max-w-[80%] p-3 rounded-2xl',
                       message.isUser
                         ? 'bg-amber-600 text-white rounded-br-none'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none'
+                        : 'bg-amber-700 dark:bg-gray-800 text-gray-200 dark:text-gray-200 rounded-bl-none'
                     )}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-sm break-words whitespace-pre-wrap overflow-x-hidden">{message.content}</p>
                     <p className="text-xs mt-1 opacity-60 text-right">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
@@ -177,6 +178,10 @@ export default function AIChatButton() {
           </motion.div>
         ) : (
           <motion.button
+            key="chat-fab"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
