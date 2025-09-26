@@ -236,7 +236,7 @@ export default function CatalogPage() {
 
             {/* Desktop Filters */}
             <div className="hidden md:flex items-center gap-3 flex-wrap justify-between">
-              <span className="font-playfair overline">Filtrar por:</span>
+              <span className="font-playfair">Filtrar por:</span>
               <h2 className="font-playfair text-emerald-600 dark:text-emerald-400">Marca</h2>
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
                 <SelectTrigger className="w-40">

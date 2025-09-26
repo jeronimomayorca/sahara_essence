@@ -122,7 +122,7 @@ export default function HomePage() {
           <div ref={addToRefs} className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="font-playfair font-medium text-4xl md:text-5xl mb-8 text-emerald-600 dark:text-emerald-400">
-                Nuestra Historia
+                Explora nuestras test boxes!
               </h2>
               <p className="font-inter text-lg text-muted-foreground leading-relaxed mb-6">
                 Desde 1985, SAHARA ESSENCE ha sido sinónimo de excelencia en el mundo de la perfumería de lujo. Cada
