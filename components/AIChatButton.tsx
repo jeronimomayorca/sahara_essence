@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type Message = {
   id: string;
@@ -14,6 +16,7 @@ type Message = {
 
 export default function AIChatButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasBeenClicked, setHasBeenClicked] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -86,16 +89,31 @@ export default function AIChatButton() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <TooltipProvider>
       <AnimatePresence mode="wait">
-        {isOpen ? (
+        {isOpen && (
+          <motion.div
+            key="chat-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            onClick={() => setIsOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      
+      <div className="fixed bottom-10 right-5 z-50">
+        <AnimatePresence mode="wait">
+          {isOpen ? (
           <motion.div
             key="chat-panel"
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'tween', duration: 0.2 }}
-            className="relative w-[86vw] sm:w-96 md:w-[28rem] max-w-[90vw] h-[80vh] max-h-[600px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
+            className="relative w-[90vw] sm:w-100 md:w-[30rem] max-w-[95vw] h-[82vh] max-h-[700px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-4 text-white flex justify-between items-center">
@@ -177,21 +195,39 @@ export default function AIChatButton() {
             </form>
           </motion.div>
         ) : (
-          <motion.button
-            key="chat-fab"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(true)}
-            className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
-            aria-label="Abrir chat"
-          >
-            <MessageSquare size={24} />
-          </motion.button>
+          <Tooltip open={!hasBeenClicked}>
+            <TooltipTrigger asChild>
+              <motion.button
+                key="chat-fab"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setHasBeenClicked(true);
+                  setIsOpen(true);
+                }}
+                className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
+                aria-label="Abrir chat"
+              >
+                <MessageSquare size={24} />
+              </motion.button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="left"
+              className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-amber-200/50 dark:border-amber-700/50 text-gray-800 dark:text-gray-100 shadow-xl px-4 py-3 rounded-xl font-medium text-md tracking-wide"
+              sideOffset={12}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"></div>
+                <p>¿Qué perfume buscas hoy?</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
         )}
-      </AnimatePresence>
-    </div>
+        </AnimatePresence>
+      </div>
+    </TooltipProvider>
   );
 }

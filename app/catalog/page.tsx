@@ -23,6 +23,7 @@ interface Perfume {
   size: string
   price: number
   image: string
+  concentration?: string
 }
 
 // Hook de debounce
@@ -58,6 +59,7 @@ export default function CatalogPage() {
   const [selectedBrand, setSelectedBrand] = useState(() => searchParams.get('brand') || 'Todas')
   const [selectedGender, setSelectedGender] = useState(() => searchParams.get('gender') || 'Todos')
   const [selectedFamily, setSelectedFamily] = useState(() => searchParams.get('family') || 'Todas')
+  const [selectedConcentration, setSelectedConcentration] = useState(() => searchParams.get('concentration') || 'Todas')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
 
@@ -70,12 +72,13 @@ export default function CatalogPage() {
     if (selectedBrand !== 'Todas') params.set('brand', selectedBrand)
     if (selectedGender !== 'Todos') params.set('gender', selectedGender)
     if (selectedFamily !== 'Todas') params.set('family', selectedFamily)
+    if (selectedConcentration !== 'Todas') params.set('concentration', selectedConcentration)
 
     // Use replace instead of push to avoid adding to browser history for each change
     const queryString = params.toString()
     const newUrl = queryString ? `?${queryString}` : '/catalog'
     window.history.replaceState({}, '', newUrl)
-  }, [searchTerm, selectedBrand, selectedGender, selectedFamily])
+  }, [searchTerm, selectedBrand, selectedGender, selectedFamily, selectedConcentration])
 
   useEffect(() => {
     fetch("/perfumes.json")
@@ -97,6 +100,11 @@ export default function CatalogPage() {
     "Todas",
     ...Array.from(new Set(perfumes.map((p) => p.family)))
   ], [perfumes])
+  
+  const concentrations = useMemo(() => [
+    "Todas",
+    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter(Boolean)))
+  ], [perfumes])
 
   const filteredPerfumes = useMemo(() => {
     return perfumes.filter((perfume) => {
@@ -106,10 +114,11 @@ export default function CatalogPage() {
       const matchesBrand = selectedBrand === "Todas" || perfume.brand === selectedBrand
       const matchesGender = selectedGender === "Todos" || perfume.gender === selectedGender
       const matchesFamily = selectedFamily === "Todas" || perfume.family === selectedFamily
+      const matchesConcentration = selectedConcentration === "Todas" || perfume.concentration === selectedConcentration
 
-      return matchesSearch && matchesBrand && matchesGender && matchesFamily
+      return matchesSearch && matchesBrand && matchesGender && matchesFamily && matchesConcentration
     })
-  }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily, perfumes])
+  }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily, selectedConcentration, perfumes])
 
   const shuffledPerfumes = useMemo(() => shuffleArray(filteredPerfumes), [filteredPerfumes])
 
@@ -125,19 +134,20 @@ export default function CatalogPage() {
   // Resetear página al cambiar filtros o búsqueda
   useEffect(() => {
     setCurrentPage(1)
-  }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily])
+  }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily, selectedConcentration])
 
   const clearFilters = () => {
     setSelectedBrand("Todas")
     setSelectedGender("Todos")
     setSelectedFamily("Todas")
+    setSelectedConcentration("Todas")
     setSearchTerm("")
     // Clear URL parameters when clearing filters
     window.history.replaceState({}, '', '/catalog')
   }
 
   const activeFiltersCount =
-    [selectedBrand, selectedGender, selectedFamily].filter((filter) => filter !== "Todas" && filter !== "Todos")
+    [selectedBrand, selectedGender, selectedFamily, selectedConcentration].filter((filter) => filter !== "Todas" && filter !== "Todos")
       .length + (searchTerm ? 1 : 0)
 
   return (
@@ -179,6 +189,21 @@ export default function CatalogPage() {
                   </SheetHeader>
                   <div className="mt-6 space-y-6">
                     <div>
+                      <label className="font-inter font-medium text-sm mb-2 block">Familia Olfativa</label>
+                      <Select value={selectedFamily} onValueChange={setSelectedFamily}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent side="bottom" align="start">
+                          {families.map((family) => (
+                            <SelectItem key={family} value={family}>
+                              {family}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
                       <label className="font-inter font-medium text-sm mb-2 block">Marca</label>
                       <Select value={selectedBrand} onValueChange={setSelectedBrand}>
                         <SelectTrigger>
@@ -209,15 +234,15 @@ export default function CatalogPage() {
                       </Select>
                     </div>
                     <div>
-                      <label className="font-inter font-medium text-sm mb-2 block">Familia Olfativa</label>
-                      <Select value={selectedFamily} onValueChange={setSelectedFamily}>
+                      <label className="font-inter font-medium text-sm mb-2 block">Concentración del perfume</label>
+                      <Select value={selectedConcentration} onValueChange={setSelectedConcentration}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {families.map((family) => (
-                            <SelectItem key={family} value={family}>
-                              {family}
+                          {concentrations.map((concentration) => (
+                            <SelectItem key={concentration} value={concentration}>
+                              {concentration}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -269,10 +294,24 @@ export default function CatalogPage() {
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Familia Olfativa" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent side="bottom">
                   {families.map((family) => (
                     <SelectItem key={family} value={family}>
                       {family}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <h2 className="font-playfair text-md text-emerald-600 dark:text-emerald-400">Concentración</h2>
+              <Select value={selectedConcentration} onValueChange={setSelectedConcentration}>
+                <SelectTrigger className="w-44">
+                  <SelectValue placeholder="Concentración" />
+                </SelectTrigger>
+                <SelectContent>
+                  {concentrations.map((concentration) => (
+                    <SelectItem key={concentration} value={concentration}>
+                      {concentration}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -163,7 +163,7 @@ export default function PerfumeDetailPage() {
       <section className="hero-section relative min-h-screen flex items-center overflow-hidden">
         <div className="bg-gradient absolute inset-0 bg-gradient-to-br from-emerald-50 via-background to-amber-50 dark:from-emerald-950/20 dark:via-background dark:to-amber-950/20" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Image */}
             <motion.div
