@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 type Message = {
   id: string;
@@ -17,17 +16,27 @@ type Message = {
 export default function AIChatButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasBeenClicked, setHasBeenClicked] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: '¡Hola! Soy tu asistente de Sahara Essence. ¿En qué puedo ayudarte hoy?',
+      content: '¡Hola, soy Aurora! tu asesor de Sahara Essence. ¿Qué fragancia buscas hoy?',
       isUser: false,
       timestamp: new Date(),
     },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-close tooltip after 15 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowTooltip(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -118,7 +127,7 @@ export default function AIChatButton() {
             {/* Header */}
             <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-4 text-white flex justify-between items-center">
               <div>
-                <h3 className="font-semibold">Asistente Virtual</h3>
+                <h3 className="font-semibold">Aurora</h3>
                 <p className="text-xs opacity-80">Sahara Essence</p>
               </div>
               <button
@@ -195,7 +204,7 @@ export default function AIChatButton() {
             </form>
           </motion.div>
         ) : (
-          <Tooltip open={!hasBeenClicked}>
+          <Tooltip open={!hasBeenClicked && showTooltip}>
             <TooltipTrigger asChild>
               <motion.button
                 key="chat-fab"
@@ -206,6 +215,7 @@ export default function AIChatButton() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   setHasBeenClicked(true);
+                  setShowTooltip(false);
                   setIsOpen(true);
                 }}
                 className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"

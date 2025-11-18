@@ -1,14 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Playfair_Display, Inter } from "next/font/google"
+import { Cormorant_Garamond, Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navigation } from "@/components/navigation"
 import AIChatButton from "@/components/AIChatButton"
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-cormorant",
   weight: ["400", "500", "700"],
 })
 
@@ -33,7 +33,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo_sahara.png" type="image/png" />
       </head>
-      <body className={`${playfair.variable} ${inter.variable} font-inter antialiased`}>
+      <body className={`${cormorant.variable} ${inter.variable} font-inter antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Navigation />
           <main className="pt-16">{children}</main>

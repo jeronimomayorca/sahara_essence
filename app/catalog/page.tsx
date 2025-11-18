@@ -103,7 +103,7 @@ export default function CatalogPage() {
   
   const concentrations = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter(Boolean)))
+    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter((c): c is string => c !== undefined && c !== null)))
   ], [perfumes])
 
   const filteredPerfumes = useMemo(() => {
@@ -261,8 +261,8 @@ export default function CatalogPage() {
 
             {/* Desktop Filters */}
             <div className="hidden md:flex items-center gap-3 flex-wrap justify-between">
-              <span className="font-playfair">Filtrar por:</span>
-              <h2 className="font-playfair text-emerald-600 dark:text-emerald-400">Marca</h2>
+              <span className="font-cormorant">Filtrar por:</span>
+              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Marca</h2>
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Marca" />
@@ -275,7 +275,7 @@ export default function CatalogPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <h2 className="font-playfair text-md text-emerald-600 dark:text-emerald-400">Genero</h2>
+              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Genero</h2>
               <Select value={selectedGender} onValueChange={setSelectedGender}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Género" />
@@ -289,7 +289,7 @@ export default function CatalogPage() {
                 </SelectContent>
               </Select>
 
-              <h2 className="font-playfair text-md text-emerald-600 dark:text-emerald-400">Familia Olfativa</h2>
+              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Familia Olfativa</h2>
               <Select value={selectedFamily} onValueChange={setSelectedFamily}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Familia Olfativa" />
@@ -303,7 +303,7 @@ export default function CatalogPage() {
                 </SelectContent>
               </Select>
 
-              <h2 className="font-playfair text-md text-emerald-600 dark:text-emerald-400">Concentración</h2>
+              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Concentración</h2>
               <Select value={selectedConcentration} onValueChange={setSelectedConcentration}>
                 <SelectTrigger className="w-44">
                   <SelectValue placeholder="Concentración" />
@@ -395,7 +395,7 @@ export default function CatalogPage() {
                             {perfume.brand}
                           </Badge>
                         </div>
-                        <h3 className="font-playfair font-medium text-xl mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                        <h3 className="font-cormorant font-medium text-xl mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                           {perfume.name}
                         </h3>
                         <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
@@ -404,7 +404,7 @@ export default function CatalogPage() {
                         </div>
                         <p className="font-inter text-sm text-muted-foreground mb-4">{perfume.family}</p>
                         <div className="flex items-center justify-between">
-                          <span className="font-playfair font-medium text-2xl text-emerald-600 dark:text-emerald-400">
+                          <span className="font-cormorant font-medium text-2xl text-emerald-600 dark:text-emerald-400">
                             ${perfume.price.toLocaleString()}
                           </span>
                         </div>
@@ -422,7 +422,7 @@ export default function CatalogPage() {
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <Search className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="font-playfair font-medium text-2xl mb-4">No se encontraron perfumes</h3>
+            <h3 className="font-cormorant font-medium text-2xl mb-4">No se encontraron perfumes</h3>
             <p className="font-inter text-muted-foreground mb-6">Intenta ajustar tus filtros o términos de búsqueda</p>
             <Button onClick={clearFilters} variant="outline">
               Limpiar todos los filtros

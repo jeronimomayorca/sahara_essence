@@ -88,7 +88,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        playfair: ["var(--font-playfair)", "serif"],
+        cormorant: ["var(--font-cormorant)", "serif"],
         inter: ["var(--font-inter)", "sans-serif"],
       },
       borderRadius: {

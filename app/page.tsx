@@ -1,25 +1,53 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import Link from "next/link"
+import Image from "next/image"
 import { Sparkles, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
 }
 
+interface Perfume {
+  id: number
+  name: string
+  brand: string
+  price: number
+  image: string
+  description: string
+}
+
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
   const sectionsRef = useRef<HTMLDivElement[]>([])
+  const [randomPerfumes, setRandomPerfumes] = useState<Perfume[]>([])
+
+  useEffect(() => {
+    // Load random perfumes
+    fetch('/perfumes.json')
+      .then(res => res.json())
+      .then((data: Perfume[]) => {
+        const shuffled = [...data].sort(() => Math.random() - 0.5)
+        setRandomPerfumes(shuffled.slice(0, 5))
+      })
+      .catch(err => console.error('Error loading perfumes:', err))
+  }, [])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Hero animation
-      gsap.fromTo(heroRef.current, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" })
+      gsap.fromTo(heroRef.current, { opacity: 0 }, { opacity: 1, duration: 1.5, ease: "power3.out" })
 
       // Sections scroll animations
       sectionsRef.current.forEach((section, index) => {
@@ -43,13 +71,13 @@ export default function HomePage() {
         }
       })
 
-      // Parallax effect for hero background
-      gsap.to(".hero-bg", {
-        yPercent: -50,
+      // Parallax effect for hero image
+      gsap.to(".hero-image", {
+        yPercent: 20,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero-section",
-          start: "top bottom",
+          start: "top top",
           end: "bottom top",
           scrub: true,
         },
@@ -68,108 +96,196 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="hero-section relative min-h-[120vh] flex justify-center overflow-hidden">
-        <div className="hero-bg absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-background to-amber-900/20 dark:from-emerald-950/40 dark:via-background dark:to-amber-950/40" />
-
-        <div ref={heroRef} className="relative z-10 text-center px-4 max-w-4xl mx-auto pt-20">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className=""
-          >
-          </motion.div>
-
-          <motion.h1
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.7 }}
-            className="font-playfair font-bold text-6xl md:text-8xl lg:text-9xl mb-6 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent"
-          >
-            SAHARA ESSENCE
-          </motion.h1>
-
-          <motion.p
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="font-inter text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto"
-          >
-            Descubre la elegancia en cada gota. Perfumes de lujo que definen tu esencia única.
-          </motion.p>
-
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, delay: 1.1 }}
-          >
-            <Link href="/catalog">
-              <Button
-                size="lg"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-inter font-medium text-lg px-10 py-5 rounded-full group"
-              >
-                Explora nuestra colección
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </motion.div>
+      <section ref={heroRef} className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Desktop Image */}
+        <div className="hero-image absolute inset-0 hidden md:block">
+          <Image
+            src="/hero_img.webp"
+            alt="Sahara Essence - Perfumes de Lujo"
+            fill
+            priority
+            quality={90}
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
+        
+        {/* Mobile Image */}
+        <div className="hero-image absolute inset-0 md:hidden">
+          <Image
+            src="/hero_mobile.webp"
+            alt="Sahara Essence - Perfumes de Lujo"
+            fill
+            priority
+            quality={90}
+            className="object-cover"
+            sizes="100vw"
+          />
         </div>
       </section>
 
-      {/* Historia Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div ref={addToRefs} className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="font-playfair font-medium text-4xl md:text-5xl mb-8 text-emerald-600 dark:text-emerald-400">
-                Explora nuestras test boxes!
-              </h2>
-              <p className="font-inter text-lg text-muted-foreground leading-relaxed mb-6">
-                Desde 1985, SAHARA ESSENCE ha sido sinónimo de excelencia en el mundo de la perfumería de lujo. Cada
-                fragancia cuenta una historia única, creada por maestros perfumistas que combinan tradición e
-                innovación.
-              </p>
-              <p className="font-inter text-lg text-muted-foreground leading-relaxed">
-                Nuestro compromiso con la calidad y la exclusividad nos ha convertido en la elección preferida de
-                quienes buscan expresar su personalidad a través del arte olfativo más refinado.
-              </p>
-            </div>
-            <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-emerald-100 to-amber-100 dark:from-emerald-900/20 dark:to-amber-900/20 rounded-3xl flex items-center justify-center">
-                <div className="w-32 h-32 bg-emerald-600/20 dark:bg-emerald-400/20 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-16 h-16 text-emerald-600 dark:text-emerald-400" />
+      {/* Best Sellers Bento Grid Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div ref={addToRefs}>
+            <h2 className="font-cormorant font-medium text-4xl md:text-6xl mb-4 text-center bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
+              Los Perfumes Más Vendidos
+            </h2>
+            <p className="font-inter text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+              Descubre nuestras colecciones más populares, cuidadosamente seleccionadas para cada estilo
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Perfumes Árabes - Large Card */}
+              <Link
+                href="/catalog?family=Oriental"
+                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-900/90 to-orange-900/90 p-8 hover:scale-[1.02] transition-transform duration-300"
+              >
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-cormorant font-medium text-3xl md:text-4xl text-white mb-4">
+                      Perfumes Árabes
+                    </h3>
+                    <p className="font-inter text-white/90 text-lg mb-6">
+                      Fragancias orientales intensas y cautivadoras
+                    </p>
+                  </div>
+                  <div className="flex items-center text-white font-inter font-medium">
+                    Explorar colección
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                  </div>
                 </div>
-              </div>
+                <div className="absolute inset-0 bg-[url('/hero_img.webp')] bg-cover bg-center opacity-20"></div>
+              </Link>
+
+              {/* Perfumes para Hombre */}
+              <Link
+                href="/catalog?gender=Hombre"
+                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900/90 to-teal-900/90 p-6 hover:scale-[1.02] transition-transform duration-300"
+              >
+                <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
+                  <div>
+                    <h3 className="font-cormorant font-medium text-2xl text-white mb-3">
+                      Para Hombre
+                    </h3>
+                    <p className="font-inter text-white/90 text-sm">
+                      Masculinidad refinada
+                    </p>
+                  </div>
+                  <div className="flex items-center text-white font-inter text-sm font-medium mt-4">
+                    Ver más
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Perfumes para Mujer */}
+              <Link
+                href="/catalog?gender=Mujer"
+                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-900/90 to-pink-900/90 p-6 hover:scale-[1.02] transition-transform duration-300"
+              >
+                <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
+                  <div>
+                    <h3 className="font-cormorant font-medium text-2xl text-white mb-3">
+                      Para Mujer
+                    </h3>
+                    <p className="font-inter text-white/90 text-sm">
+                      Elegancia femenina
+                    </p>
+                  </div>
+                  <div className="flex items-center text-white font-inter text-sm font-medium mt-4">
+                    Ver más
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Unisex */}
+              <Link
+                href="/catalog?gender=Unisex"
+                className="group lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-900/90 to-indigo-900/90 p-6 hover:scale-[1.02] transition-transform duration-300"
+              >
+                <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
+                  <div>
+                    <h3 className="font-cormorant font-medium text-2xl md:text-3xl text-white mb-3">
+                      Fragancias Unisex
+                    </h3>
+                    <p className="font-inter text-white/90">
+                      Sin límites, para todos
+                    </p>
+                  </div>
+                  <div className="flex items-center text-white font-inter font-medium mt-4">
+                    Descubrir
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Misión Section */}
-      <section className="py-32 px-4 bg-muted/30">
+      {/* Featured Perfumes Carousel Section */}
+      <section className="py-24 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
-          <div ref={addToRefs} className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="order-2 md:order-1 relative">
-              <div className="aspect-square bg-gradient-to-br from-amber-100 to-emerald-100 dark:from-amber-900/20 dark:to-emerald-900/20 rounded-3xl flex items-center justify-center">
-                <div className="w-32 h-32 bg-amber-600/20 dark:bg-amber-400/20 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-16 h-16 text-amber-600 dark:text-amber-400" />
-                </div>
-              </div>
-            </div>
-            <div className="order-1 md:order-2">
-              <h2 className="font-playfair font-medium text-4xl md:text-5xl mb-8 text-amber-600 dark:text-amber-400">
-                Nuestra Misión
-              </h2>
-              <p className="font-inter text-lg text-muted-foreground leading-relaxed mb-6">
-                Crear experiencias olfativas extraordinarias que trascienden el tiempo y conectan con las emociones más
-                profundas. Cada perfume es una obra de arte líquida, diseñada para despertar recuerdos y crear nuevos
-                momentos inolvidables.
-              </p>
-              <p className="font-inter text-lg text-muted-foreground leading-relaxed">
-                Nos dedicamos a ofrecer solo las fragancias más exclusivas y refinadas, seleccionadas cuidadosamente
-                para satisfacer los gustos más exigentes.
-              </p>
-            </div>
+          <div ref={addToRefs}>
+            <h2 className="font-cormorant font-medium text-4xl md:text-5xl mb-4 text-center text-amber-600 dark:text-amber-400">
+              Fragancias Destacadas
+            </h2>
+            <p className="font-inter text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+              Descubre una selección exclusiva de nuestras fragancias más exquisitas
+            </p>
+            
+            {randomPerfumes.length > 0 && (
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-4">
+                  {randomPerfumes.map((perfume) => (
+                    <CarouselItem key={perfume.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Link href={`/catalog/${perfume.id}`}>
+                        <Card className="group overflow-hidden border-2 hover:border-amber-600 dark:hover:border-amber-400 transition-all duration-300 hover:shadow-2xl">
+                          <CardContent className="p-0">
+                            <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-amber-50 to-emerald-50 dark:from-amber-950/20 dark:to-emerald-950/20">
+                              <Image
+                                src={perfume.image}
+                                alt={perfume.name}
+                                fill
+                                className="object-contain p-8 group-hover:scale-110 transition-transform duration-500"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                            </div>
+                            <div className="p-6">
+                              <p className="font-inter text-sm text-amber-600 dark:text-amber-400 mb-2">
+                                {perfume.brand}
+                              </p>
+                              <h3 className="font-cormorant font-medium text-xl mb-3 line-clamp-2">
+                                {perfume.name}
+                              </h3>
+                              <p className="font-inter text-sm text-muted-foreground mb-4 line-clamp-2">
+                                {perfume.description}
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <p className="font-inter font-bold text-2xl text-emerald-600 dark:text-emerald-400">
+                                  ${perfume.price.toLocaleString()}
+                                </p>
+                                <ArrowRight className="w-5 h-5 text-amber-600 dark:text-amber-400 group-hover:translate-x-2 transition-transform" />
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex" />
+                <CarouselNext className="hidden md:flex" />
+              </Carousel>
+            )}
           </div>
         </div>
       </section>
@@ -178,7 +294,7 @@ export default function HomePage() {
       <section className="py-32 px-4">
         <div className="max-w-6xl mx-auto">
           <div ref={addToRefs} className="text-center">
-            <h2 className="font-playfair font-medium text-4xl md:text-5xl mb-12 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
+            <h2 className="font-cormorant font-medium text-4xl md:text-5xl mb-12 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
               Nuestra Visión
             </h2>
             <p className="font-inter text-xl text-muted-foreground leading-relaxed max-w-4xl mx-auto mb-12">
@@ -190,21 +306,21 @@ export default function HomePage() {
                 <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Sparkles className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="font-playfair font-medium text-2xl mb-4">Exclusividad</h3>
+                <h3 className="font-cormorant font-medium text-2xl mb-4">Exclusividad</h3>
                 <p className="font-inter text-muted-foreground">Fragancias únicas y limitadas</p>
               </div>
               <div className="text-center">
                 <div className="w-20 h-20 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Sparkles className="w-10 h-10 text-amber-600 dark:text-amber-400" />
                 </div>
-                <h3 className="font-playfair font-medium text-2xl mb-4">Calidad</h3>
+                <h3 className="font-cormorant font-medium text-2xl mb-4">Calidad</h3>
                 <p className="font-inter text-muted-foreground">Ingredientes premium seleccionados</p>
               </div>
               <div className="text-center">
                 <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Sparkles className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="font-playfair font-medium text-2xl mb-4">Experiencia</h3>
+                <h3 className="font-cormorant font-medium text-2xl mb-4">Experiencia</h3>
                 <p className="font-inter text-muted-foreground">Servicio personalizado excepcional</p>
               </div>
             </div>

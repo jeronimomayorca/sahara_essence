@@ -198,7 +198,7 @@ export default function PerfumeDetailPage() {
                 <Badge variant="outline" className="mb-4 font-inter font-medium">
                   {perfume.brand}
                 </Badge>
-                <h1 className="font-playfair font-bold text-4xl md:text-6xl mb-4 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text">
+                <h1 className="font-cormorant font-bold text-4xl md:text-6xl mb-4 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text">
                   {perfume.name}
                 </h1>
                 <p className="font-inter text-xl text-muted-foreground mb-6">{perfume.description}</p>
@@ -214,7 +214,7 @@ export default function PerfumeDetailPage() {
 
               <div className="detail-item">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="font-playfair font-bold text-4xl text-emerald-600 dark:text-emerald-400">
+                  <span className="font-cormorant font-bold text-4xl text-emerald-600 dark:text-emerald-400">
                     ${perfume.price.toLocaleString()}
                   </span>
                   <div className="flex gap-2">
@@ -237,13 +237,13 @@ export default function PerfumeDetailPage() {
                 <Card>
                   <CardContent className="p-4 text-center">
                     <p className="font-inter font-medium text-sm text-muted-foreground mb-1">Concentración</p>
-                    <p className="font-playfair font-medium">{perfume.concentration}</p>
+                    <p className="font-cormorant font-medium">{perfume.concentration}</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
                     <p className="font-inter font-medium text-sm text-muted-foreground mb-1">Duración</p>
-                    <p className="font-playfair font-medium">{perfume.longevity}</p>
+                    <p className="font-cormorant font-medium">{perfume.longevity}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -262,7 +262,7 @@ export default function PerfumeDetailPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-playfair font-bold text-3xl md:text-4xl mb-4 text-emerald-600 dark:text-emerald-400">
+            <h2 className="font-cormorant font-bold text-3xl md:text-4xl mb-4 text-emerald-600 dark:text-emerald-400">
               Pirámide Olfativa
             </h2>
             <p className="font-inter text-muted-foreground max-w-2xl mx-auto">
@@ -276,7 +276,7 @@ export default function PerfumeDetailPage() {
             <Card className="relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
               <CardContent className="p-6">
-                <h3 className="font-playfair font-bold text-xl mb-4 text-center">Notas de Salida</h3>
+                <h3 className="font-cormorant font-bold text-xl mb-4 text-center">Notas de Salida</h3>
                 <div className="space-y-3">
                   {perfume.notes.top.map((note, index) => {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || Droplets
@@ -302,7 +302,7 @@ export default function PerfumeDetailPage() {
             <Card className="relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-amber-600"></div>
               <CardContent className="p-6">
-                <h3 className="font-playfair font-bold text-xl mb-4 text-center">Notas de Corazón</h3>
+                <h3 className="font-cormorant font-bold text-xl mb-4 text-center">Notas de Corazón</h3>
                 <div className="space-y-3">
                   {perfume.notes.middle.map((note, index) => {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || Flower
@@ -328,7 +328,7 @@ export default function PerfumeDetailPage() {
             <Card className="relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-600 to-amber-600"></div>
               <CardContent className="p-6">
-                <h3 className="font-playfair font-bold text-xl mb-4 text-center">Notas de Fondo</h3>
+                <h3 className="font-cormorant font-bold text-xl mb-4 text-center">Notas de Fondo</h3>
                 <div className="space-y-3">
                   {perfume.notes.base.map((note, index) => {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || TreePine
@@ -363,7 +363,7 @@ export default function PerfumeDetailPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="font-playfair font-bold text-3xl md:text-4xl mb-8 text-amber-600 dark:text-amber-400">
+            <h2 className="font-cormorant font-bold text-3xl md:text-4xl mb-8 text-amber-600 dark:text-amber-400">
               La Historia
             </h2>
             <p className="font-inter text-lg leading-relaxed text-muted-foreground mb-8">{perfume.story}</p>
@@ -371,7 +371,7 @@ export default function PerfumeDetailPage() {
             <div className="grid md:grid-cols-2 gap-8 mt-12">
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="font-playfair font-bold text-xl mb-4">Estaciones Ideales</h3>
+                  <h3 className="font-cormorant font-bold text-xl mb-4">Estaciones Ideales</h3>
                   <div className="flex flex-wrap gap-2">
                     {perfume.season.map((season) => (
                       <Badge key={season} variant="secondary" className="font-inter">
@@ -384,7 +384,7 @@ export default function PerfumeDetailPage() {
 
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="font-playfair font-bold text-xl mb-4">Ocasiones</h3>
+                  <h3 className="font-cormorant font-bold text-xl mb-4">Ocasiones</h3>
                   <div className="flex flex-wrap gap-2">
                     {perfume.occasion.map((occasion) => (
                       <Badge key={occasion} variant="secondary" className="font-inter">
@@ -409,7 +409,7 @@ export default function PerfumeDetailPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-playfair font-bold text-3xl md:text-4xl mb-4 text-emerald-600 dark:text-emerald-400">
+            <h2 className="font-cormorant font-bold text-3xl md:text-4xl mb-4 text-emerald-600 dark:text-emerald-400">
               Características
             </h2>
           </motion.div>
@@ -426,7 +426,7 @@ export default function PerfumeDetailPage() {
                   <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Droplets className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <h3 className="font-playfair font-bold text-xl mb-4">Longevidad</h3>
+                  <h3 className="font-cormorant font-bold text-xl mb-4">Longevidad</h3>
                   <p className="font-inter text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
                     {perfume.longevity}
                   </p>
@@ -446,7 +446,7 @@ export default function PerfumeDetailPage() {
                   <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Sparkles className="w-8 h-8 text-amber-600 dark:text-amber-400" />
                   </div>
-                  <h3 className="font-playfair font-bold text-xl mb-4">Sillage</h3>
+                  <h3 className="font-cormorant font-bold text-xl mb-4">Sillage</h3>
                   <p className="font-inter text-2xl font-bold text-amber-600 dark:text-amber-400 mb-2">
                     {perfume.sillage}
                   </p>
@@ -466,7 +466,7 @@ export default function PerfumeDetailPage() {
                   <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Flower className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <h3 className="font-playfair font-bold text-xl mb-4">Concentración</h3>
+                  <h3 className="font-cormorant font-bold text-xl mb-4">Concentración</h3>
                   <p className="font-inter text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
                     {perfume.concentration}
                   </p>
