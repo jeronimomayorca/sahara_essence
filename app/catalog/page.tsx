@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Search, Filter, X } from "lucide-react"
+import { Search, Filter, X, ArrowUpDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,19 +12,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import Link from "next/link"
-
-interface Perfume {
-  id: number
-  name: string
-  brand: string
-  gender: string
-  family: string
-  notes: string[]
-  size: string
-  price: number
-  image: string
-  concentration?: string
-}
+import { supabase } from "@/lib/supabase"
+import type { Perfume } from "@/lib/types"
 
 // Hook de debounce
 function useDebounce<T>(value: T, delay: number): T {
@@ -40,14 +29,28 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue
 }
 
-// Fisher-Yates shuffle algorithm
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const shuffled = [...array]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+// Función de ordenamiento
+type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'brand-asc' | 'brand-desc'
+
+const sortPerfumes = (perfumes: Perfume[], sortBy: SortOption): Perfume[] => {
+  const sorted = [...perfumes]
+  
+  switch (sortBy) {
+    case 'name-asc':
+      return sorted.sort((a, b) => a.name.localeCompare(b.name))
+    case 'name-desc':
+      return sorted.sort((a, b) => b.name.localeCompare(a.name))
+    case 'price-asc':
+      return sorted.sort((a, b) => a.price - b.price)
+    case 'price-desc':
+      return sorted.sort((a, b) => b.price - a.price)
+    case 'brand-asc':
+      return sorted.sort((a, b) => a.brand.localeCompare(b.brand))
+    case 'brand-desc':
+      return sorted.sort((a, b) => b.brand.localeCompare(a.brand))
+    default:
+      return sorted
   }
-  return shuffled
 }
 
 export default function CatalogPage() {
@@ -60,8 +63,10 @@ export default function CatalogPage() {
   const [selectedGender, setSelectedGender] = useState(() => searchParams.get('gender') || 'Todos')
   const [selectedFamily, setSelectedFamily] = useState(() => searchParams.get('family') || 'Todas')
   const [selectedConcentration, setSelectedConcentration] = useState(() => searchParams.get('concentration') || 'Todas')
+  const [sortBy, setSortBy] = useState<SortOption>(() => (searchParams.get('sort') as SortOption) || 'name-asc')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
@@ -73,18 +78,49 @@ export default function CatalogPage() {
     if (selectedGender !== 'Todos') params.set('gender', selectedGender)
     if (selectedFamily !== 'Todas') params.set('family', selectedFamily)
     if (selectedConcentration !== 'Todas') params.set('concentration', selectedConcentration)
+    if (sortBy !== 'name-asc') params.set('sort', sortBy)
 
     // Use replace instead of push to avoid adding to browser history for each change
     const queryString = params.toString()
     const newUrl = queryString ? `?${queryString}` : '/catalog'
     window.history.replaceState({}, '', newUrl)
-  }, [searchTerm, selectedBrand, selectedGender, selectedFamily, selectedConcentration])
+  }, [searchTerm, selectedBrand, selectedGender, selectedFamily, selectedConcentration, sortBy])
 
+  // Cargar perfumes desde Supabase
   useEffect(() => {
-    fetch("/perfumes.json")
-      .then((res) => res.json())
-      .then((data) => setPerfumes(data))
-      .catch(() => setPerfumes([]))
+    async function loadPerfumes() {
+      setIsLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('perfumes')
+          .select('*')
+          .order('name', { ascending: true })
+
+        if (error) {
+          console.error('Error loading perfumes:', error)
+          // Fallback a JSON si Supabase falla
+          const response = await fetch("/perfumes.json")
+          const jsonData = await response.json()
+          setPerfumes(jsonData)
+        } else {
+          setPerfumes(data || [])
+        }
+      } catch (err) {
+        console.error('Error:', err)
+        // Fallback a JSON
+        try {
+          const response = await fetch("/perfumes.json")
+          const jsonData = await response.json()
+          setPerfumes(jsonData)
+        } catch {
+          setPerfumes([])
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadPerfumes()
   }, [])
 
   // Memoizar los arrays de filtros
@@ -120,16 +156,17 @@ export default function CatalogPage() {
     })
   }, [debouncedSearchTerm, selectedBrand, selectedGender, selectedFamily, selectedConcentration, perfumes])
 
-  const shuffledPerfumes = useMemo(() => shuffleArray(filteredPerfumes), [filteredPerfumes])
+  // Ordenar perfumes de manera consistente
+  const sortedPerfumes = useMemo(() => sortPerfumes(filteredPerfumes, sortBy), [filteredPerfumes, sortBy])
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1)
   const perfumesPerPage = 12
-  const totalPages = Math.ceil(shuffledPerfumes.length / perfumesPerPage)
+  const totalPages = Math.ceil(sortedPerfumes.length / perfumesPerPage)
   const paginatedPerfumes = useMemo(() => {
     const start = (currentPage - 1) * perfumesPerPage
-    return shuffledPerfumes.slice(start, start + perfumesPerPage)
-  }, [shuffledPerfumes, currentPage])
+    return sortedPerfumes.slice(start, start + perfumesPerPage)
+  }, [sortedPerfumes, currentPage])
 
   // Resetear página al cambiar filtros o búsqueda
   useEffect(() => {
@@ -142,6 +179,7 @@ export default function CatalogPage() {
     setSelectedFamily("Todas")
     setSelectedConcentration("Todas")
     setSearchTerm("")
+    setSortBy('name-asc')
     // Clear URL parameters when clearing filters
     window.history.replaceState({}, '', '/catalog')
   }
@@ -261,6 +299,22 @@ export default function CatalogPage() {
 
             {/* Desktop Filters */}
             <div className="hidden md:flex items-center gap-3 flex-wrap justify-between">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+                <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Ordenar por" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name-asc">Nombre (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Nombre (Z-A)</SelectItem>
+                    <SelectItem value="price-asc">Precio (Menor a Mayor)</SelectItem>
+                    <SelectItem value="price-desc">Precio (Mayor a Menor)</SelectItem>
+                    <SelectItem value="brand-asc">Marca (A-Z)</SelectItem>
+                    <SelectItem value="brand-desc">Marca (Z-A)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <span className="font-cormorant">Filtrar por:</span>
               <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Marca</h2>
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
@@ -338,6 +392,15 @@ export default function CatalogPage() {
 
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="font-inter text-muted-foreground">Cargando perfumes...</p>
+            </div>
+          </div>
+        ) : (
+          <>
         <AnimatePresence mode="wait">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {paginatedPerfumes.map((perfume) => (
@@ -452,6 +515,8 @@ export default function CatalogPage() {
               Siguiente
             </Button>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>

@@ -5,38 +5,19 @@ import { motion } from "framer-motion"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Heart, Share2, Sparkles, Droplets, Flower, TreePine } from "lucide-react"
+import { ArrowLeft, Heart, Share2, Sparkles, Droplets, Flower, TreePine, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
+import { supabase } from "@/lib/supabase"
+import { addToCart } from "@/lib/cart"
+import type { Perfume } from "@/lib/types"
+import { toast } from "sonner"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
-}
-
-interface Perfume {
-  id: number
-  name: string
-  brand: string
-  gender: string
-  family: string
-  notes: {
-    top: string[]
-    middle: string[]
-    base: string[]
-  }
-  size: string
-  price: number
-  image: string
-  description: string
-  story: string
-  concentration: string
-  longevity: string
-  sillage: string
-  season: string[]
-  occasion: string[]
 }
 
 const noteIcons = {
@@ -60,18 +41,42 @@ export default function PerfumeDetailPage() {
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
 
   useEffect(() => {
-    fetch("/perfumes.json")
-      .then((res) => res.json())
-      .then((data) => setPerfumes(data))
-      .catch(() => setPerfumes([]))
-  }, [])
+    async function loadPerfume() {
+      const id = Number.parseInt(params.id as string)
+      
+      try {
+        const { data, error } = await supabase
+          .from('perfumes')
+          .select('*')
+          .eq('id', id)
+          .single()
 
-  useEffect(() => {
-    if (!perfumes.length) return
-    const id = Number.parseInt(params.id as string)
-    const foundPerfume = perfumes.find((p) => p.id === id)
-    setPerfume(foundPerfume || null)
-  }, [params.id, perfumes])
+        if (error) {
+          console.error('Error loading perfume:', error)
+          // Fallback a JSON
+          const response = await fetch("/perfumes.json")
+          const jsonData = await response.json()
+          const foundPerfume = jsonData.find((p: Perfume) => p.id === id)
+          setPerfume(foundPerfume || null)
+        } else {
+          setPerfume(data)
+        }
+      } catch (err) {
+        console.error('Error:', err)
+        // Fallback a JSON
+        try {
+          const response = await fetch("/perfumes.json")
+          const jsonData = await response.json()
+          const foundPerfume = jsonData.find((p: Perfume) => p.id === id)
+          setPerfume(foundPerfume || null)
+        } catch {
+          setPerfume(null)
+        }
+      }
+    }
+
+    loadPerfume()
+  }, [params.id])
 
   useEffect(() => {
     if (!perfume) return
@@ -231,6 +236,20 @@ export default function PerfumeDetailPage() {
                     </Button>
                   </div>
                 </div>
+                
+                <Button
+                  className="w-full bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-700 hover:to-amber-700 text-white"
+                  size="lg"
+                  onClick={() => {
+                    addToCart(perfume, 1)
+                    toast.success('Agregado al carrito', {
+                      description: `${perfume.name} ha sido agregado a tu carrito`
+                    })
+                  }}
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Agregar al Carrito
+                </Button>
               </div>
 
               <div className="detail-item grid grid-cols-2 gap-4">
@@ -373,11 +392,11 @@ export default function PerfumeDetailPage() {
                 <CardContent className="p-6">
                   <h3 className="font-cormorant font-bold text-xl mb-4">Estaciones Ideales</h3>
                   <div className="flex flex-wrap gap-2">
-                    {perfume.season.map((season) => (
+                    {perfume.season?.map((season) => (
                       <Badge key={season} variant="secondary" className="font-inter">
                         {season}
                       </Badge>
-                    ))}
+                    )) || <span className="text-sm text-muted-foreground">Todo el año</span>}
                   </div>
                 </CardContent>
               </Card>
@@ -386,11 +405,11 @@ export default function PerfumeDetailPage() {
                 <CardContent className="p-6">
                   <h3 className="font-cormorant font-bold text-xl mb-4">Ocasiones</h3>
                   <div className="flex flex-wrap gap-2">
-                    {perfume.occasion.map((occasion) => (
+                    {perfume.occasion?.map((occasion) => (
                       <Badge key={occasion} variant="secondary" className="font-inter">
                         {occasion}
                       </Badge>
-                    ))}
+                    )) || <span className="text-sm text-muted-foreground">Versátil</span>}
                   </div>
                 </CardContent>
               </Card>

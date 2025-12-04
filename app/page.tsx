@@ -14,6 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import AboutSection from "@/components/AboutSection"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -290,43 +291,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Visión Section */}
-      <section className="py-32 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div ref={addToRefs} className="text-center">
-            <h2 className="font-cormorant font-medium text-4xl md:text-5xl mb-12 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
-              Nuestra Visión
-            </h2>
-            <p className="font-inter text-xl text-muted-foreground leading-relaxed max-w-4xl mx-auto mb-12">
-              Ser reconocidos mundialmente como la boutique de perfumes de lujo más prestigiosa, donde cada cliente
-              encuentra su fragancia perfecta y vive una experiencia sensorial única e irrepetible.
-            </p>
-            <div className="grid md:grid-cols-3 gap-8 mt-16">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h3 className="font-cormorant font-medium text-2xl mb-4">Exclusividad</h3>
-                <p className="font-inter text-muted-foreground">Fragancias únicas y limitadas</p>
-              </div>
-              <div className="text-center">
-                <div className="w-20 h-20 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="w-10 h-10 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h3 className="font-cormorant font-medium text-2xl mb-4">Calidad</h3>
-                <p className="font-inter text-muted-foreground">Ingredientes premium seleccionados</p>
-              </div>
-              <div className="text-center">
-                <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h3 className="font-cormorant font-medium text-2xl mb-4">Experiencia</h3>
-                <p className="font-inter text-muted-foreground">Servicio personalizado excepcional</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Sobre Nosotros Section */}
+      <AboutSection />
     </div>
   )
 }
