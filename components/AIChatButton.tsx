@@ -218,7 +218,7 @@ export default function AIChatButton() {
                   setShowTooltip(false);
                   setIsOpen(true);
                 }}
-                className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
+                className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
                 aria-label="Abrir chat"
               >
                 <MessageSquare size={24} />

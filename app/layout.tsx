@@ -5,6 +5,9 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navigation } from "@/components/navigation"
 import AIChatButton from "@/components/AIChatButton"
+import { CartButton } from "@/components/CartButton"
+import { Toaster } from "@/components/ui/sonner"
+import Footer from "@/components/Footer"
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -37,7 +40,10 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Navigation />
           <main className="pt-16">{children}</main>
+          <Footer />
           <AIChatButton />
+          <CartButton />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
