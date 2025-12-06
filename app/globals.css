@@ -159,6 +159,7 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
 
 /* Gradient animation for FAQ titles */
 @keyframes gradient {
@@ -265,5 +266,4 @@ html {
 .perspective-container {
   perspective: 1000px;
   perspective-origin: center;
-}
 }

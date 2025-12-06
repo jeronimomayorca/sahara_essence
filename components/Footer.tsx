@@ -30,7 +30,7 @@ export default function Footer() {
       <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 pointer-events-none" />
       
       <div className="relative max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12 mb-12">
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -59,31 +59,6 @@ export default function Footer() {
                 </motion.a>
               ))}
             </div>
-          </motion.div>
-
-          {/* Quick Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <h4 className="font-inter font-semibold text-lg mb-4 text-foreground">
-              Enlaces Rápidos
-            </h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    href={link.href}
-                    className="font-inter text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors inline-flex items-center group"
-                  >
-                    <span className="w-0 group-hover:w-2 h-0.5 bg-amber-600 dark:bg-amber-400 transition-all duration-300 mr-0 group-hover:mr-2" />
-                    {link.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </motion.div>
 
           {/* FAQ Links */}

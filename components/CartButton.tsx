@@ -28,7 +28,7 @@ export function CartButton() {
 
   return (
     <>
-      <div className="fixed bottom-24 right-5 z-40">
+      <div className="fixed bottom-32 right-6 z-40">
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
