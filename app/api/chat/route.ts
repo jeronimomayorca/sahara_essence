@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "edge"; // This enables the Edge Runtime which is faster for chat applications
+export const runtime = "nodejs"; // This enables the Edge Runtime which is faster for chat applications
 
 export async function POST(request: Request) {
   try {
