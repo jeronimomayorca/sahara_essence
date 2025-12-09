@@ -98,23 +98,13 @@ export default function CatalogPage() {
 
         if (error) {
           console.error('Error loading perfumes:', error)
-          // Fallback a JSON si Supabase falla
-          const response = await fetch("/perfumes.json")
-          const jsonData = await response.json()
-          setPerfumes(jsonData)
+          setPerfumes([])
         } else {
           setPerfumes(data || [])
         }
       } catch (err) {
         console.error('Error:', err)
-        // Fallback a JSON
-        try {
-          const response = await fetch("/perfumes.json")
-          const jsonData = await response.json()
-          setPerfumes(jsonData)
-        } catch {
-          setPerfumes([])
-        }
+        setPerfumes([])
       } finally {
         setIsLoading(false)
       }

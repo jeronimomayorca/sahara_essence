@@ -53,25 +53,13 @@ export default function PerfumeDetailPage() {
 
         if (error) {
           console.error('Error loading perfume:', error)
-          // Fallback a JSON
-          const response = await fetch("/perfumes.json")
-          const jsonData = await response.json()
-          const foundPerfume = jsonData.find((p: Perfume) => p.id === id)
-          setPerfume(foundPerfume || null)
+          setPerfume(null)
         } else {
           setPerfume(data)
         }
       } catch (err) {
         console.error('Error:', err)
-        // Fallback a JSON
-        try {
-          const response = await fetch("/perfumes.json")
-          const jsonData = await response.json()
-          const foundPerfume = jsonData.find((p: Perfume) => p.id === id)
-          setPerfume(foundPerfume || null)
-        } catch {
-          setPerfume(null)
-        }
+        setPerfume(null)
       }
     }
 
@@ -392,11 +380,15 @@ export default function PerfumeDetailPage() {
                 <CardContent className="p-6">
                   <h3 className="font-cormorant font-bold text-xl mb-4">Estaciones Ideales</h3>
                   <div className="flex flex-wrap gap-2">
-                    {perfume.season?.map((season) => (
-                      <Badge key={season} variant="secondary" className="font-inter">
-                        {season}
-                      </Badge>
-                    )) || <span className="text-sm text-muted-foreground">Todo el año</span>}
+                    {Array.isArray(perfume.season) && perfume.season.length > 0 ? (
+                      perfume.season.map((season) => (
+                        <Badge key={season} variant="secondary" className="font-inter">
+                          {season}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Todo el año</span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -405,11 +397,15 @@ export default function PerfumeDetailPage() {
                 <CardContent className="p-6">
                   <h3 className="font-cormorant font-bold text-xl mb-4">Ocasiones</h3>
                   <div className="flex flex-wrap gap-2">
-                    {perfume.occasion?.map((occasion) => (
-                      <Badge key={occasion} variant="secondary" className="font-inter">
-                        {occasion}
-                      </Badge>
-                    )) || <span className="text-sm text-muted-foreground">Versátil</span>}
+                    {Array.isArray(perfume.occasion) && perfume.occasion.length > 0 ? (
+                      perfume.occasion.map((occasion) => (
+                        <Badge key={occasion} variant="secondary" className="font-inter">
+                          {occasion}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Versátil</span>
+                    )}
                   </div>
                 </CardContent>
               </Card>

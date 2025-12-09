@@ -15,18 +15,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import AboutSection from "@/components/AboutSection"
+import { supabase } from "@/lib/supabase"
+import type { Perfume } from "@/lib/types"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
-}
-
-interface Perfume {
-  id: number
-  name: string
-  brand: string
-  price: number
-  image: string
-  description: string
 }
 
 export default function HomePage() {
@@ -35,14 +28,29 @@ export default function HomePage() {
   const [randomPerfumes, setRandomPerfumes] = useState<Perfume[]>([])
 
   useEffect(() => {
-    // Load random perfumes
-    fetch('/perfumes.json')
-      .then(res => res.json())
-      .then((data: Perfume[]) => {
-        const shuffled = [...data].sort(() => Math.random() - 0.5)
-        setRandomPerfumes(shuffled.slice(0, 5))
-      })
-      .catch(err => console.error('Error loading perfumes:', err))
+    // Load random perfumes from Supabase
+    const loadRandomPerfumes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('perfumes')
+          .select('id, name, brand, price, image, description')
+          .order('name', { ascending: true })
+
+        if (error) {
+          console.error('Error loading perfumes:', error)
+          return
+        }
+
+        if (data) {
+          const shuffled = [...data].sort(() => Math.random() - 0.5)
+          setRandomPerfumes(shuffled.slice(0, 5))
+        }
+      } catch (err) {
+        console.error('Error loading perfumes:', err)
+      }
+    }
+
+    loadRandomPerfumes()
   }, [])
 
   useEffect(() => {
