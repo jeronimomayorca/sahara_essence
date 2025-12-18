@@ -20,7 +20,7 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { icon: Instagram, href: '#', label: 'Instagram' },
+    { icon: Instagram, href: 'https://www.instagram.com/saharaessence_oficial/', label: 'Instagram' },
     { icon: Facebook, href: '#', label: 'Facebook' },
   ];
 
@@ -50,6 +50,7 @@ export default function Footer() {
                 <motion.a
                   key={index}
                   href={social.href}
+                  target="_blank"
                   aria-label={social.label}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
@@ -103,14 +104,14 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Mail size={18} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                <a href="mailto:contacto@saharaessence.com" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
-                  contacto@saharaessence.com
+                <a href="mailto:saharaessence.oficial@gmail.com" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                  saharaessence.oficial@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Phone size={18} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <a href="tel:+573001234567" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
-                  +57 300 123 4567
+                  +57 321 697 4038
                 </a>
               </li>
             </ul>

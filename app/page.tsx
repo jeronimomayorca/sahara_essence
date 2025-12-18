@@ -148,7 +148,7 @@ export default function HomePage() {
               {/* Perfumes Árabes - Large Card */}
               <Link
                 href="/catalog?family=Oriental"
-                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-900/90 to-orange-900/90 p-8 hover:scale-[1.02] transition-transform duration-300"
+                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] to-[#958672] p-8 hover:scale-[1.02] transition-transform duration-300"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between">
                   <div>
@@ -170,7 +170,7 @@ export default function HomePage() {
               {/* Perfumes para Hombre */}
               <Link
                 href="/catalog?gender=Hombre"
-                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900/90 to-teal-900/90 p-6 hover:scale-[1.02] transition-transform duration-300"
+                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#cab195] p-6 hover:scale-[1.02] transition-transform duration-300"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
                   <div>
@@ -191,7 +191,7 @@ export default function HomePage() {
               {/* Perfumes para Mujer */}
               <Link
                 href="/catalog?gender=Mujer"
-                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-900/90 to-pink-900/90 p-6 hover:scale-[1.02] transition-transform duration-300"
+                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#cab195] to-[#f9dfbd] p-6 hover:scale-[1.02] transition-transform duration-300"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
                   <div>
@@ -212,7 +212,7 @@ export default function HomePage() {
               {/* Unisex */}
               <Link
                 href="/catalog?gender=Unisex"
-                className="group lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-900/90 to-indigo-900/90 p-6 hover:scale-[1.02] transition-transform duration-300"
+                className="group lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#f9dfbd] p-6 hover:scale-[1.02] transition-transform duration-300"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
                   <div>

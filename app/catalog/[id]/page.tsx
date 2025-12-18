@@ -169,7 +169,6 @@ export default function PerfumeDetailPage() {
                     priority
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-200/20 to-amber-200/20 dark:from-emerald-800/20 dark:to-amber-800/20 rounded-3xl transform rotate-3 pointer-events-none" />
               </div>
             </motion.div>
 

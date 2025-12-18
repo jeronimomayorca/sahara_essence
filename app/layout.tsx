@@ -45,7 +45,7 @@ export default function RootLayout({
           <Footer />
           <AIChatButton />
           <CartButton />
-          <Toaster />
+          <Toaster position="bottom-left" />
         </ThemeProvider>
       </body>
     </html>
