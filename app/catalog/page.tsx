@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, Suspense } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search, Filter, X, ArrowUpDown } from "lucide-react"
@@ -53,7 +53,7 @@ const sortPerfumes = (perfumes: Perfume[], sortBy: SortOption): Perfume[] => {
   }
 }
 
-export default function CatalogPage() {
+function CatalogContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -479,5 +479,13 @@ export default function CatalogPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <CatalogContent />
+    </Suspense>
   )
 }
