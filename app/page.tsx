@@ -137,7 +137,7 @@ export default function HomePage() {
       <section className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div ref={addToRefs}>
-            <h2 className="font-cormorant font-medium text-4xl md:text-6xl mb-4 text-center bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
+            <h2 className="font-cormorant font-medium text-4xl md:text-6xl mb-4 text-center text-amber-600 dark:text-amber-400">
               Los Perfumes Más Vendidos
             </h2>
             <p className="font-inter text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">

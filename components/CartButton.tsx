@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ShoppingCart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getCart } from '@/lib/cart'
 import { CartDrawer } from './CartDrawer'
@@ -28,19 +28,23 @@ export function CartButton() {
 
   return (
     <>
-      <div className="fixed bottom-32 right-6 z-40">
-        <Button
+      <div className="fixed bottom-32 right-5 z-40">
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          size="lg"
-          className="relative bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-700 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all rounded-full w-14 h-14 p-0"
+          className="relative bg-gradient-to-r from-amber-600 to-amber-700 text-white p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
+          aria-label="Abrir carrito"
         >
-          <ShoppingCart className="w-6 h-6" />
+          <ShoppingCart size={24} />
           {itemCount > 0 && (
             <Badge className="absolute -top-2 -right-2 w-6 h-6 p-0 flex items-center justify-center text-xs bg-red-500 border-2 border-white">
               {itemCount}
             </Badge>
           )}
-        </Button>
+        </motion.button>
       </div>
       
       <CartDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />

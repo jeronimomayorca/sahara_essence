@@ -66,7 +66,6 @@ export default function CatalogPage() {
   const [sortBy, setSortBy] = useState<SortOption>(() => (searchParams.get('sort') as SortOption) || 'name-asc')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
@@ -89,7 +88,6 @@ export default function CatalogPage() {
   // Cargar perfumes desde Supabase
   useEffect(() => {
     async function loadPerfumes() {
-      setIsLoading(true)
       try {
         const { data, error } = await supabase
           .from('perfumes')
@@ -105,8 +103,6 @@ export default function CatalogPage() {
       } catch (err) {
         console.error('Error:', err)
         setPerfumes([])
-      } finally {
-        setIsLoading(false)
       }
     }
 
@@ -289,22 +285,6 @@ export default function CatalogPage() {
 
             {/* Desktop Filters */}
             <div className="hidden md:flex items-center gap-3 flex-wrap justify-between">
-              <div className="flex items-center gap-2">
-                <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-                <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Ordenar por" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name-asc">Nombre (A-Z)</SelectItem>
-                    <SelectItem value="name-desc">Nombre (Z-A)</SelectItem>
-                    <SelectItem value="price-asc">Precio (Menor a Mayor)</SelectItem>
-                    <SelectItem value="price-desc">Precio (Mayor a Menor)</SelectItem>
-                    <SelectItem value="brand-asc">Marca (A-Z)</SelectItem>
-                    <SelectItem value="brand-desc">Marca (Z-A)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <span className="font-cormorant">Filtrar por:</span>
               <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Marca</h2>
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
@@ -382,15 +362,6 @@ export default function CatalogPage() {
 
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="font-inter text-muted-foreground">Cargando perfumes...</p>
-            </div>
-          </div>
-        ) : (
-          <>
         <AnimatePresence mode="wait">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {paginatedPerfumes.map((perfume) => (
@@ -505,8 +476,6 @@ export default function CatalogPage() {
               Siguiente
             </Button>
           </div>
-        )}
-        </>
         )}
       </div>
     </div>

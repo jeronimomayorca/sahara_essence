@@ -8,6 +8,7 @@ import AIChatButton from "@/components/AIChatButton"
 import { CartButton } from "@/components/CartButton"
 import { Toaster } from "@/components/ui/sonner"
 import Footer from "@/components/Footer"
+import PageLoader from "@/components/PageLoader"
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({
       </head>
       <body className={`${cormorant.variable} ${inter.variable} font-inter antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <PageLoader />
           <Navigation />
           <main className="pt-16">{children}</main>
           <Footer />
