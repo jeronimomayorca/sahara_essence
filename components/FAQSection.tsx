@@ -24,31 +24,31 @@ interface FAQCategory {
 const faqData: FAQItem[] = [
   {
     id: 'originales',
-    icon: '⭐',
+    icon: '🏷️',
     question: '¿Los perfumes son originales?',
     answer: 'No. Nuestros perfumes son réplicas de alta calidad (1.1).'
   },
   {
     id: 'duracion',
-    icon: '⭐',
+    icon: '⏳',
     question: '¿Cuánto dura la fragancia en la piel?',
     answer: 'Dependiendo del pH y del tipo de perfume, la duración puede ser entre 6 y 12 horas.'
   },
   {
     id: 'envios',
-    icon: '⭐',
+    icon: '🚚',
     question: '¿Hacen envíos a toda Colombia?',
     answer: 'Sí, realizamos envíos a cualquier ciudad o municipio del país mediante transportadoras aliadas.'
   },
   {
     id: 'tiempo-envio',
-    icon: '⭐',
+    icon: '📅',
     question: '¿Cuánto tarda un envío?',
     answer: 'Entre 2 y 5 días hábiles, dependiendo de la ubicación.'
   },
   {
     id: 'metodos-pago',
-    icon: '⭐',
+    icon: '💳',
     question: '¿Qué métodos de pago aceptan?',
     answer: [
       'Transferencia bancaria',
@@ -58,7 +58,7 @@ const faqData: FAQItem[] = [
   },
   {
     id: 'garantia',
-    icon: '⭐',
+    icon: '🛡️',
     question: '¿Tienen garantía?',
     answer: 'Sí. Todos nuestros productos cuentan con garantía por defectos de fábrica.'
   }
@@ -66,7 +66,7 @@ const faqData: FAQItem[] = [
 
 const categories: FAQCategory[] = [
   {
-    title: '🔄 Política de Devoluciones y Cambios',
+    title: 'Política de Devoluciones y Cambios',
     icon: '🔄',
     sections: [
       {
@@ -94,7 +94,7 @@ const categories: FAQCategory[] = [
     ]
   },
   {
-    title: '🚚 Información de Envíos',
+    title: 'Información de Envíos',
     icon: '🚚',
     sections: [
       {
@@ -122,7 +122,7 @@ const categories: FAQCategory[] = [
     ]
   },
   {
-    title: '💸 Términos de Descuentos y Promociones',
+    title: 'Términos de Descuentos y Promociones',
     icon: '💸',
     sections: [
       {
@@ -138,7 +138,7 @@ const categories: FAQCategory[] = [
     ]
   },
   {
-    title: '📜 Términos y Condiciones de Compra',
+    title: 'Términos y Condiciones de Compra',
     icon: '📜',
     sections: [
       {
@@ -177,94 +177,48 @@ const categories: FAQCategory[] = [
   }
 ];
 
-function FAQItem({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean; onToggle: () => void }) {
-  return (
-    <div
-      className={cn(
-        "group border-2 rounded-2xl overflow-hidden transition-all duration-300",
-        "hover:shadow-lg hover:-translate-y-1",
-        "bg-card/50 backdrop-blur-sm",
-        isOpen
-          ? "border-amber-500/50 shadow-lg shadow-amber-500/10"
-          : "border-border hover:border-amber-500/30"
-      )}
-      style={{ contain: 'layout style paint', willChange: 'transform' }}
-    >
-      <button
-        onClick={onToggle}
-        className="w-full p-4 md:p-6 flex items-center justify-between text-left gap-4"
-        aria-expanded={isOpen}
-      >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <span className="text-xl md:text-2xl flex-shrink-0">{item.icon}</span>
-          <h3 className="font-inter font-semibold text-base md:text-lg">
-            {item.question}
-          </h3>
-        </div>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-          className="text-amber-600 dark:text-amber-400 flex-shrink-0"
-        >
-          <ChevronDown size={24} />
-        </motion.div>
-      </button>
+// --- Unified Component ---
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 md:px-6 pb-4 md:pb-6 pt-2 border-t border-border/50">
-              {typeof item.answer === 'string' ? (
-                <p className="text-muted-foreground text-sm md:text-base">{item.answer}</p>
-              ) : (
-                <ul className="space-y-2 list-disc list-inside">
-                  {item.answer.map((line, i) => (
-                    <li key={i} className="text-muted-foreground text-sm md:text-base">{line}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function CategorySection({ category, index }: { category: FAQCategory; index: number }) {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  // Generate ID from title
-  const sectionId = category.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-
+function AccordionItem({ 
+  id, 
+  icon, 
+  title, 
+  content, 
+  index, 
+  isOpen, 
+  onToggle 
+}: AccordionItemProps) {
   return (
     <motion.div
-      id={sectionId}
+      id={id}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-100px' }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className="border-2 border-border rounded-3xl overflow-hidden bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300 scroll-mt-24"
+      className={cn(
+        "group border-2 rounded-3xl overflow-hidden transition-all duration-300 scroll-mt-24",
+        "bg-card/40 backdrop-blur-sm",
+        isOpen
+          ? "border-amber-500/40 shadow-xl shadow-amber-500/5 bg-card/60"
+          : "border-border/50 hover:border-amber-500/30 hover:shadow-lg"
+      )}
     >
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-6 md:p-8 flex items-center justify-between text-left gap-4 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20"
+        onClick={onToggle}
+        className="w-full p-6 md:p-8 flex items-center justify-between text-left gap-4 bg-gradient-to-r from-amber-50/30 to-orange-50/30 dark:from-amber-950/10 dark:to-orange-950/10 hover:from-amber-50/50 hover:to-orange-50/50 transition-colors"
+        aria-expanded={isOpen}
       >
-        <h3 className="font-cormorant font-semibold text-2xl md:text-3xl bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-          {category.title}
-        </h3>
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <span className="text-3xl flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+            {icon}
+          </span>
+          <h3 className="font-cormorant font-medium text-2xl md:text-3xl text-amber-600 dark:text-amber-400">
+            {title}
+          </h3>
+        </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="text-amber-600 dark:text-amber-400 flex-shrink-0"
         >
           <ChevronDown size={28} />
@@ -277,31 +231,40 @@ function CategorySection({ category, index }: { category: FAQCategory; index: nu
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
+            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="p-6 md:p-8 space-y-6">
-              {category.sections.map((section, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1, duration: 0.4 }}
-                  className="space-y-3"
-                >
-                  <h4 className="font-inter font-semibold text-lg text-foreground">
-                    {section.title}
-                  </h4>
-                  <ul className="space-y-2 pl-4">
-                    {section.content.map((item, i) => (
-                      <li key={i} className="text-muted-foreground text-sm md:text-base flex items-start gap-2">
-                        <span className="text-amber-600 dark:text-amber-400 mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
+            <div className="p-6 md:p-8 pt-0 border-t border-border/20 mt-2">
+              <div className="pt-6 space-y-8">
+                {content.map((section, sIdx) => (
+                  <div key={sIdx} className="space-y-4">
+                    {section.subtitle && (
+                      <motion.h4 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.1 }}
+                        className="font-inter font-medium text-lg text-foreground/90 border-l-2 border-amber-500/40 pl-4"
+                      >
+                        {section.subtitle}
+                      </motion.h4>
+                    )}
+                    <ul className={cn("space-y-3", !section.subtitle && "border-l-2 border-amber-500/40 pl-6")}>
+                      {section.lines.map((line, lIdx) => (
+                        <motion.li 
+                          key={lIdx} 
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: sIdx * 0.1 + lIdx * 0.05 }}
+                          className="text-muted-foreground text-base leading-relaxed flex items-start gap-3"
+                        >
+                          <span className="text-amber-600/60 mt-1.5">•</span>
+                          <span>{line}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
@@ -336,7 +299,7 @@ export default function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="font-cormorant text-4xl md:text-5xl font-medium text-center mb-4 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient scroll-mt-24"
+          className="font-cormorant text-4xl md:text-5xl font-medium text-center mb-4 text-amber-600 dark:text-amber-400 scroll-mt-24"
         >
           Preguntas Frecuentes
         </motion.h2>
@@ -351,30 +314,35 @@ export default function FAQSection() {
           Encuentra respuestas a las preguntas más comunes sobre nuestros productos y servicios
         </motion.p>
 
-        {/* FAQ Items */}
-        <div className="space-y-4 mb-16">
+        {/* Todo el contenido de FAQ en un solo contenedor unificado */}
+        <div className="space-y-4">
           {faqData.map((item, index) => (
-            <motion.div
+            <AccordionItem
               key={item.id}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-            >
-              <FAQItem
-                item={item}
-                isOpen={openItems.has(item.id)}
-                onToggle={() => toggleItem(item.id)}
+              id={item.id}
+              index={index}
+              icon={item.icon}
+              title={item.question}
+              content={[{ lines: Array.isArray(item.answer) ? item.answer : [item.answer] }]}
+              isOpen={openItems.has(item.id)}
+              onToggle={() => toggleItem(item.id)}
+            />
+          ))}
+          {categories.map((cat, index) => {
+            const sectionId = cat.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            return (
+              <AccordionItem
+                key={sectionId}
+                id={sectionId}
+                index={faqData.length + index}
+                icon={cat.icon}
+                title={cat.title}
+                content={cat.sections.map(s => ({ subtitle: s.title, lines: s.content }))}
+                isOpen={openItems.has(sectionId)}
+                onToggle={() => toggleItem(sectionId)}
               />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Categorías Adicionales */}
-        <div className="space-y-6">
-          {categories.map((category, index) => (
-            <CategorySection key={index} category={category} index={index} />
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
