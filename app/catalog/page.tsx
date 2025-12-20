@@ -382,6 +382,7 @@ function CatalogContent() {
                           alt={perfume.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          priority={perfumes.indexOf(perfume) < 4}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">

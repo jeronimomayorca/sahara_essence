@@ -137,15 +137,15 @@ export function clearCart(): Cart {
 export function generateWhatsAppMessage(cart: Cart): string {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '573216974038'
   
-  let message = '🌟 *Pedido Sahara Essence* 🌟\n\n'
-  message += '📦 *Productos:*\n'
+  let message = '✨ *SAHARA ESSENCE — Mi Selección* ✨\n\n'
+  message += '¡Hola! 👋 Me encantaron estas fragancias y quiero llevarlas:\n\n'
 
-  cart.items.forEach((item, index) => {
-    message += `${index + 1}. ${item.name} (${item.size}) x${item.quantity} - $${(item.price * item.quantity).toLocaleString()}\n`
+  cart.items.forEach((item) => {
+    message += `✦ ${item.quantity}x ${item.name} (${item.size}) — $${(item.price * item.quantity).toLocaleString()}\n`
   })
 
-  message += `\n💰 *Total:* $${cart.total.toLocaleString()}\n\n`
-  message += '¡Hola! Me gustaría realizar este pedido. ¿Está disponible?'
+  message += `\n💎 *Inversión Total:* $${cart.total.toLocaleString()}\n\n`
+  message += '¿Me confirman si las tienen listas para mí? ✨ Quedo atento/a.'
 
   const encodedMessage = encodeURIComponent(message)
   return `https://wa.me/${whatsappNumber}?text=${encodedMessage}`

@@ -37,7 +37,10 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo_sahara.png" type="image/png" />
       </head>
-      <body className={`${cormorant.variable} ${inter.variable} font-inter antialiased`}>
+      <body 
+        className={`${cormorant.variable} ${inter.variable} font-inter antialiased`}
+        suppressHydrationWarning
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <PageLoader />
           <Navigation />

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { Moon, Sun, Menu, X, Sparkles } from "lucide-react"
+import { Moon, Sun, Menu, X, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 
@@ -23,6 +23,7 @@ export function Navigation() {
   const navItems = [
     { href: "/", label: "Inicio" },
     { href: "/catalog", label: "Catálogo" },
+    { href: "/faqs", label: "Preguntas Frecuentes" },
   ]
 
   if (!mounted) {
@@ -65,6 +66,22 @@ export function Navigation() {
 
           {/* Theme Toggle & Mobile Menu */}
           <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              className="w-9 h-9"
+            >
+              <a 
+                href="https://www.instagram.com/saharaessence_oficial/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"

@@ -21,7 +21,6 @@ export default function Footer() {
 
   const socialLinks = [
     { icon: Instagram, href: 'https://www.instagram.com/saharaessence_oficial/', label: 'Instagram' },
-    { icon: Facebook, href: '#', label: 'Facebook' },
   ];
 
   return (

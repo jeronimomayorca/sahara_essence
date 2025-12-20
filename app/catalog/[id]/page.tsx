@@ -165,7 +165,7 @@ export default function PerfumeDetailPage() {
                     src={getPerfumeImageUrl(perfume.image)} 
                     alt={perfume.name} 
                     fill 
-                    className="object-contain rounded-3xl"
+                    className="object-contain rounded-3xl perfume-image"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority
                   />
