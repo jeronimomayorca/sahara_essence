@@ -14,6 +14,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import type { Perfume } from "@/lib/types"
+import { getPerfumeImageUrl } from "@/lib/utils"
 
 // Hook de debounce
 function useDebounce<T>(value: T, delay: number): T {
@@ -377,7 +378,7 @@ function CatalogContent() {
                     <CardContent className="p-0">
                       <div className="relative aspect-[3/3] overflow-hidden">
                         <Image
-                          src={perfume.image || "/placeholder.svg"}
+                          src={getPerfumeImageUrl(perfume.image)}
                           alt={perfume.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"

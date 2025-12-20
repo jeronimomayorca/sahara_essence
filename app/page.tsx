@@ -17,6 +17,7 @@ import {
 import AboutSection from "@/components/AboutSection"
 import { supabase } from "@/lib/supabase"
 import type { Perfume } from "@/lib/types"
+import { getPerfumeImageUrl } from "@/lib/utils"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -261,7 +262,7 @@ export default function HomePage() {
                           <CardContent className="p-0">
                             <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-amber-50 to-emerald-50 dark:from-amber-950/20 dark:to-emerald-950/20">
                               <Image
-                                src={perfume.image}
+                                src={getPerfumeImageUrl(perfume.image)}
                                 alt={perfume.name}
                                 fill
                                 className="object-contain p-8 group-hover:scale-110 transition-transform duration-500"

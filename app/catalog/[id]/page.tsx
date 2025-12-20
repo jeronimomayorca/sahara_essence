@@ -15,6 +15,7 @@ import { supabase } from "@/lib/supabase"
 import { addToCart } from "@/lib/cart"
 import type { Perfume } from "@/lib/types"
 import { toast } from "sonner"
+import { getPerfumeImageUrl } from "@/lib/utils"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -161,7 +162,7 @@ export default function PerfumeDetailPage() {
               <div className="relative aspect-[3/4] max-w-md mx-auto overflow-hidden rounded-3xl shadow-2xl">
                 <div className="absolute inset-0">
                   <Image 
-                    src={perfume.image || "/placeholder.svg"} 
+                    src={getPerfumeImageUrl(perfume.image)} 
                     alt={perfume.name} 
                     fill 
                     className="object-contain rounded-3xl"

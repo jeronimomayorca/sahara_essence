@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
 import { getCart, updateQuantity, removeFromCart, clearCart, generateWhatsAppMessage } from '@/lib/cart'
 import type { Cart } from '@/lib/types'
+import { getPerfumeImageUrl } from '@/lib/utils'
 
 interface CartDrawerProps {
   isOpen: boolean
@@ -115,7 +116,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           <div className="flex gap-4">
                             <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
                               <Image
-                                src={item.image}
+                                src={getPerfumeImageUrl(item.image)}
                                 alt={item.name}
                                 fill
                                 className="object-cover"
