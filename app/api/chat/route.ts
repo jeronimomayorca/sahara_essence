@@ -1,104 +1,159 @@
-import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
-import type { Perfume } from "@/lib/types";
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "nodejs"; // This enables the Edge Runtime which is faster for chat applications
+// Initialize Supabase Client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-export async function POST(request: Request) {
+// Initialize Supabase outside if possible for connection pooling effect in serverless (though JS client handles it)
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export async function POST(req: NextRequest) {
+  console.log("--- POST /api/chat STARTED ---");
+  
   try {
-    const { message } = await request.json();
-
-    if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Mensaje inválido" }, { status: 400 });
-    }
-
-    const apiKey = process.env.GEMINI_API_KEY;
-
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY no está configurado");
+      console.error("FATAL: GOOGLE_GENERATIVE_AI_API_KEY is missing in process.env");
+      throw new Error("Misconfigured Server: Missing API Key");
     }
 
-    // Extraer contexto y obtener recomendaciones
-    const contexts = extractContext(message);
-    const recommendations = await getRecommendations(contexts, 3);
+    // Initialize Gemini Client Per-Request to ensure Env var is fresh
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
 
-    const model = "gemini-2.0-flash";
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const body = await req.json();
+    const { messages } = body;
+    const lastMessage = messages[messages.length - 1];
+    const userMessage = lastMessage.content;
+    console.log("User Message:", userMessage);
 
-    // Personalidad de Aurora desde rol_personalidad.md
-    const auroraPersonality = `**ROL Y PERSONALIDAD: Aurora, Asesora de Lujo de Sahara Essence**
+    // 1. Extract Preferences
+    console.log("Step 1: Extracting preferences...");
+    const extractionPrompt = `
+      Eres un experto en perfumes. Analiza el siguiente mensaje del usuario y extrae sus preferencias en formato JSON.
+      Si un campo no se menciona, usa null.
+      
+      Mensaje: "${userMessage}"
+      
+      Campos a extraer:
+      - occasion (ej: oficina, fiesta, cita, diario)
+      - family (ej: floral, amaderado, cítrico, oriental)
+      - gender (ej: hombre, mujer, unisex)
+      - concentration (ej: edt, edp, parfum)
+      - season (ej: verano, invierno, primavera, otoño)
+      
+      Responde SOLO con el JSON válido.
+    `;
 
-Eres **Aurora**, la asesora de perfumes de alta gama en **Sahara Essence**. Tu rol es guiar al cliente en una experiencia de compra **exclusiva** y **personalizada**, elevando la selección de una fragancia a un arte.
+    let extractionText = "";
+    try {
+        const extractionResult = await geminiModel.generateContent(extractionPrompt);
+        extractionText = extractionResult.response.text();
+        console.log("Extraction Raw Response:", extractionText);
+    } catch (e: any) {
+        console.error("Gemini Extraction Error Full:", e);
+        throw new Error(`Gemini Extraction Failed: ${e.message}`);
+    }
 
-**ESTILO DE COMUNICACIÓN:**
-1. **Tono:** Sofisticado, elegante, **cálido, cercano, y cómplice**. Dirígete al cliente con una familiaridad experta, como si fuera un amigo con un gusto exquisito.
-2. **Referencia de Servicio:** Actúa como un asesor privado de **alta costura** que atiende a su círculo más íntimo. El trato es personal, el servicio es impecable y de lujo, pero el enfoque es de confianza.
-3. **Audiencia:** Personas de 18 a 50 años.
-4. **Extensión y Asertividad:** **Sé concisa, elegante y asertiva.** Tus respuestas deben ser directas. Evita párrafos largos que saturen al cliente. La precisión es un lujo.
-5. **Emojis:** Incorpora emojis sutiles y de lujo (ej. 💎, ✨, 🌙, 🥂, 🌹) para añadir un toque visual.
+    let preferences: any = {};
+    try {
+        const jsonStr = extractionText.replace(/```json/g, "").replace(/```/g, "").trim();
+        preferences = JSON.parse(jsonStr);
+    } catch (e) {
+        console.error("Error parsing preferences JSON:", e);
+    }
+    console.log("Extracted Preferences:", preferences);
 
-**OBJETIVO PRINCIPAL:**
-Iniciar una conversación para descubrir la fragancia ideal, preguntando sobre el **contexto de uso** de la fragancia.
+    // 2. Embedding
+    console.log("Step 2: Generating embedding...");
+    // Force a simpler query if preferences are empty
+    const family = preferences.family || "general";
+    const occasion = preferences.occasion || "general";
+    const semanticQuery = `Perfume ${family} para ${occasion}. ${userMessage}`;
+    
+    let embedding = [];
+    try {
+        const embeddingResult = await embeddingModel.embedContent(semanticQuery);
+        embedding = embeddingResult.embedding.values;
+        console.log("Embedding generated. Length:", embedding.length);
+    } catch (e: any) {
+        console.error("Gemini Embedding Error Full:", e);
+        throw new Error(`Gemini Embedding Failed: ${e.message}`);
+    }
 
-**TIPO DE PREGUNTAS CLAVE:**
-* ¿Para qué ocasión busca esta nueva "firma olfativa"?
-* ¿Busca algo para la **oficina** (profesionalismo), una **noche de gala** (distinción), una sesión de **entrenamiento** (energía), o momentos de **serenidad** (relajación)?
-
-**PRIMERA INTERACCIÓN (Saludo de Bienvenida ÚNICO y CERCANO):**
-Cada vez que inicies la interacción, debes generar un saludo de bienvenida *completamente único* que evite repetir frases exactas. El tono debe ser de una bienvenida íntima y cómplice, como a un amigo de confianza que viene a buscar un consejo de lujo, y luego proceder inmediatamente a la pregunta clave sobre el contexto de uso.`;
-
-    const catalogInfo = recommendations.length > 0
-      ? `\n\n**PERFUMES DISPONIBLES EN NUESTRO CATÁLOGO:**\n${formatPerfumesForPrompt(recommendations)}\n\n**IMPORTANTE:** Solo recomienda perfumes de la lista anterior. Menciona el nombre exacto, marca, precio y explica por qué es perfecto para el cliente basándote en su contexto.`
-      : '';
-
-    const systemPrompt = `${auroraPersonality}${catalogInfo}`;
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `${systemPrompt}\n\nUsuario: ${message}`,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.8,
-          maxOutputTokens: 800,
-          topP: 0.95,
-        },
-      }),
+    // 4. Supabase RPC
+    console.log("Step 3: Searching Supabase...");
+    const { data: recommendations, error } = await supabase.rpc("match_perfumes", {
+      query_embedding: embedding,
+      match_count: 5,
+      filter_occasion: preferences.occasion || null,
+      filter_family: preferences.family || null,
+      filter_gender: preferences.gender || null,
+      filter_concentration: preferences.concentration || null,
+      filter_season: preferences.season || null
     });
 
-    if (!response.ok) {
-      let errorData: unknown = null;
-      try {
-        errorData = await response.json();
-      } catch {
-        // ignore parse error
-      }
-      console.error("Gemini API Error:", errorData || response.statusText);
-      throw new Error("Error al conectar con el servicio de IA");
+    if (error) {
+      console.error("Supabase RPC Error Full:", error);
+      throw new Error(`Supabase Error: ${error.message}`);
+    }
+    console.log("Supabase returned rows:", recommendations?.length);
+
+    // 5. Generate Explanation
+    if (!recommendations || recommendations.length === 0) {
+        return NextResponse.json({ 
+            role: "assistant", 
+            content: "Lo siento, no encontré perfumes que coincidan exactamente con tu búsqueda. ¿Podrías darme más detalles o probar con otras preferencias?" 
+        });
     }
 
-    const data = await response.json();
-    const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Lo siento, no pude procesar tu solicitud. ¿Podrías reformular tu pregunta? ✨";
+    const products = recommendations.slice(0, 3);
+    
+    console.log("Step 4: Generating explanations...");
+    const explainedProducts = await Promise.all(products.map(async (p: any) => {
+        try {
+            const prompt = `
+                Explica en una frase breve y persuasiva por qué el perfume "${p.name}" (${p.brand}) es una buena recomendación para alguien que busca: "${userMessage}".
+                Usa la descripción: "${p.description}".
+                No inventes datos.
+            `;
+            const res = await geminiModel.generateContent(prompt);
+            return {
+                ...p,
+                reason: res.response.text(),
+            };
+        } catch (e) {
+            console.error(`Error explaining product ${p.name}:`, e);
+            return { ...p, reason: "Recomendado para ti." };
+        }
+    }));
 
-    return NextResponse.json({ reply });
-  } catch (error) {
-    console.error("Chat API Error:", error);
-    return NextResponse.json(
-      { error: "Ocurrió un error al procesar tu mensaje" },
-      { status: 500 }
-    );
+    // Generate final response text
+    console.log("Step 5: Final summary...");
+    const finalPrompt = `
+        El usuario preguntó: "${userMessage}".
+        Le hemos encontrado estos perfumes:
+        ${explainedProducts.map((p: any) => `- ${p.name} de ${p.brand}: ${p.reason}`).join("\n")}
+        
+        Redacta una respuesta amable y natural presentando estas opciones. Sé breve.
+    `;
+    
+    const finalRes = await geminiModel.generateContent(finalPrompt);
+    const finalMessage = finalRes.response.text();
+
+    console.log("--- SUCCESS ---");
+    return NextResponse.json({
+        role: "assistant",
+        content: finalMessage,
+        data: explainedProducts
+    });
+
+  } catch (error: any) {
+    console.error("--- API FATAL ERROR ---", error);
+    // Return the specific error message to the client for the user to see in Network tab
+    return NextResponse.json({ error: error.message || "Internal Server Error", details: error.toString() }, { status: 500 });
   }
 }

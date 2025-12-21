@@ -2,15 +2,25 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import Image from 'next/image';
+
+type Product = {
+  id: number;
+  name: string;
+  brand: string;
+  image: string | null;
+  reason: string;
+};
 
 type Message = {
   id: string;
   content: string;
-  isUser: boolean;
+  role: 'user' | 'assistant';
   timestamp: Date;
+  data?: Product[];
 };
 
 export default function AIChatButton() {
@@ -22,8 +32,8 @@ export default function AIChatButton() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: '¡Hola, soy Aurora! tu asesor de Sahara Essence. ¿Qué fragancia buscas hoy?',
-      isUser: false,
+      content: '¡Hola! Soy tu experto en perfumes. ¿Qué tipo de fragancia estás buscando hoy? (ej: algo fresco para oficina, dulce para una cita...)',
+      role: 'assistant',
       timestamp: new Date(),
     },
   ]);
@@ -33,7 +43,7 @@ export default function AIChatButton() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowTooltip(false);
-    }, 10000);
+    }, 15000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -44,31 +54,37 @@ export default function AIChatButton() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content: input,
-      isUser: true,
+      role: 'user',
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      // TODO: Replace with your actual API endpoint
+      // Prepare messages for API (remove generic types/timestamp for payload)
+      const payloadMessages = newMessages.map(m => ({
+        role: m.role,
+        content: m.content
+      }));
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ messages: payloadMessages }),
       });
 
       if (!response.ok) throw new Error('Error al conectar con el asistente');
@@ -77,9 +93,10 @@ export default function AIChatButton() {
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.reply || 'Lo siento, no pude procesar tu solicitud.',
-        isUser: false,
+        content: data.content || 'Lo siento, no pude procesar tu solicitud.',
+        role: 'assistant',
         timestamp: new Date(),
+        data: data.data // Products
       };
 
       setMessages((prev) => [...prev, aiMessage]);
@@ -88,7 +105,7 @@ export default function AIChatButton() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: 'Lo siento, hubo un error al procesar tu mensaje. Por favor, inténtalo de nuevo.',
-        isUser: false,
+        role: 'assistant',
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -125,55 +142,97 @@ export default function AIChatButton() {
             className="relative w-[90vw] sm:w-100 md:w-[30rem] max-w-[95vw] h-[82vh] max-h-[700px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-4 text-white flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold">Aurora</h3>
-                <p className="text-xs opacity-80">Sahara Essence</p>
+            <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-4 text-white flex justify-between items-center shadow-md z-10">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-white/20 rounded-full">
+                    <Sparkles size={16} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm md:text-base">Asistente de Perfumes</h3>
+                  <p className="text-[10px] md:text-xs opacity-80">Sahara Essence AI</p>
+                </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded-full hover:bg-amber-700 transition-colors"
+                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
                 aria-label="Cerrar chat"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4">
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/50 dark:bg-gray-900/50">
               {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={cn(
-                    'flex',
-                    message.isUser ? 'justify-end' : 'justify-start'
-                  )}
-                >
-                  <div
+                <div key={message.id} className={cn('flex flex-col gap-2', message.role === 'user' ? 'items-end' : 'items-start')}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
                     className={cn(
-                      'max-w-[80%] p-3 rounded-2xl',
-                      message.isUser
+                      'max-w-[85%] p-3.5 rounded-2xl shadow-sm relative',
+                      message.role === 'user'
                         ? 'bg-amber-600 text-white rounded-br-none'
-                        : 'bg-amber-700 dark:bg-gray-800 text-gray-200 dark:text-gray-200 rounded-bl-none'
+                        : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-100 dark:border-gray-700'
                     )}
                   >
-                    <p className="text-sm break-words whitespace-pre-wrap overflow-x-hidden">{message.content}</p>
-                    <p className="text-xs mt-1 opacity-60 text-right">
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    <p className={cn("text-[10px] mt-1 text-right block", message.role === 'user' ? "text-white/60" : "text-gray-400")}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
-                  </div>
-                </motion.div>
+                  </motion.div>
+
+                  {/* Product Recommendation Cards */}
+                  {message.data && message.data.length > 0 && (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="flex gap-3 overflow-x-auto pb-4 w-full max-w-full px-1 snap-x no-scrollbar"
+                      >
+                          {message.data.map((product) => (
+                              <a 
+                                key={product.id} 
+                                href={`/catalog/${product.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer" 
+                                className="min-w-[200px] max-w-[200px] bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl overflow-hidden shadow-sm flex-shrink-0 snap-center hover:shadow-md transition-shadow group flex flex-col cursor-pointer"
+                              >
+                                  <div className="relative h-32 w-full bg-gray-100 dark:bg-gray-900 group-hover:scale-105 transition-transform duration-500">
+                                      {product.image ? (
+                                           <Image 
+                                              src={product.image} 
+                                              alt={product.name} 
+                                              fill 
+                                              className="object-cover" 
+                                              sizes="(max-width: 768px) 100vw, 200px" 
+                                           />
+                                      ) : (
+                                           <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs p-4 text-center">Imagen no disponible</div>
+                                      )}
+                                  </div>
+                                  <div className="p-3">
+                                      <div className="text-xs text-amber-600 dark:text-amber-500 font-medium mb-0.5">{product.brand}</div>
+                                      <div className="font-bold text-sm text-gray-900 dark:text-white truncate" title={product.name}>{product.name}</div>
+                                      <div className="text-xs mt-2 text-gray-600 dark:text-gray-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg leading-snug border border-amber-100 dark:border-amber-900/30">
+                                        ✨ {product.reason}
+                                      </div>
+                                  </div>
+                              </a>
+                          ))}
+                      </motion.div>
+                  )}
+                </div>
               ))}
+              
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl rounded-bl-none">
-                    <div className="flex space-x-1">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-bl-none shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="flex space-x-1.5 items-center">
                       <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                       <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                       <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span className="text-xs text-gray-400 ml-2 font-medium">Pensando...</span>
                     </div>
                   </div>
                 </div>
@@ -182,23 +241,23 @@ export default function AIChatButton() {
             </div>
 
             {/* Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="relative">
+            <form onSubmit={handleSendMessage} className="p-3 md:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+              <div className="relative flex items-center gap-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Escribe tu mensaje..."
-                  className="w-full p-3 pr-12 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="flex-1 p-3 pr-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all font-medium placeholder:font-normal"
                   disabled={isLoading}
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-amber-600 hover:text-amber-700 disabled:opacity-50"
+                  className="p-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 disabled:opacity-50 disabled:hover:bg-amber-600 transition-colors shadow-sm active:scale-95"
                   aria-label="Enviar mensaje"
                 >
-                  <Send size={20} />
+                  <Send size={18} />
                 </button>
               </div>
             </form>
@@ -218,19 +277,27 @@ export default function AIChatButton() {
                   setShowTooltip(false);
                   setIsOpen(true);
                 }}
-                className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
+                className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 md:p-5 rounded-full shadow-xl hover:shadow-2xl transition-all z-50 ring-4 ring-amber-100/50 dark:ring-amber-900/20"
                 aria-label="Abrir chat"
               >
-                <MessageSquare size={24} />
+                <div className="relative">
+                    <MessageSquare size={24} strokeWidth={2.5} />
+                    {!hasBeenClicked && (
+                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                        </span>
+                    )}
+                </div>
               </motion.button>
             </TooltipTrigger>
             <TooltipContent
               side="left"
               className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-amber-200/50 dark:border-amber-700/50 text-gray-800 dark:text-gray-100 shadow-xl px-4 py-3 rounded-xl font-medium text-md tracking-wide"
-              sideOffset={12}
+              sideOffset={16}
             >
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <p>¿Qué perfume buscas hoy?</p>
               </div>
             </TooltipContent>
