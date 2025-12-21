@@ -2,17 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Initialize Supabase outside if possible for connection pooling effect in serverless (though JS client handles it)
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   console.log("--- POST /api/chat STARTED ---");
   
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("FATAL: Supabase configuration missing");
+      throw new Error("Misconfigured Server: Missing Supabase credentials");
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {
       console.error("FATAL: GOOGLE_GENERATIVE_AI_API_KEY is missing in process.env");
