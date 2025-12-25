@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getCart, updateQuantity, removeFromCart, clearCart, generateWhatsAppMessage } from '@/lib/cart'
 import type { Cart } from '@/lib/types'
 import { getPerfumeImageUrl } from '@/lib/utils'
@@ -204,6 +205,16 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <Trash2 className="w-4 h-4 mr-2" />
                     Vaciar Carrito
                   </Button>
+
+                  <div className="pt-2 text-center">
+                    <Link 
+                      href="/faqs" 
+                      onClick={onClose}
+                      className="text-xs text-muted-foreground hover:text-amber-600 transition-colors underline underline-offset-4"
+                    >
+                      ¿Necesitas ayuda con tu pedido? Ver FAQs
+                    </Link>
+                  </div>
                 </div>
               )}
             </motion.div>

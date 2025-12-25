@@ -11,11 +11,17 @@ import { useTheme } from "next-themes"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true)
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   const toggleMenu = () => setIsOpen(!isOpen)
@@ -23,7 +29,6 @@ export function Navigation() {
   const navItems = [
     { href: "/", label: "Inicio" },
     { href: "/catalog", label: "Catálogo" },
-    { href: "/faqs", label: "Preguntas Frecuentes" },
   ]
 
   if (!mounted) {
@@ -31,7 +36,13 @@ export function Navigation() {
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b">
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
+        isScrolled 
+          ? "glass-luxury py-1 shadow-lg border-white/10" 
+          : "bg-background/40 backdrop-blur-md py-4 border-transparent"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

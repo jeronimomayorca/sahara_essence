@@ -28,17 +28,17 @@ export function CartButton() {
 
   return (
     <>
-      <div className="fixed bottom-32 right-5 z-40">
+      <div className="fixed bottom-28 md:bottom-32 right-5 z-40">
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="relative bg-gradient-to-r from-amber-600 to-amber-700 text-white p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
+          className="relative bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 md:p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
           aria-label="Abrir carrito"
         >
-          <ShoppingCart size={24} />
+          <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
           {itemCount > 0 && (
             <Badge className="absolute -top-2 -right-2 w-6 h-6 p-0 flex items-center justify-center text-xs bg-red-500 border-2 border-white">
               {itemCount}

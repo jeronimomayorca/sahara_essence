@@ -18,6 +18,8 @@ import AboutSection from "@/components/AboutSection"
 import { supabase } from "@/lib/supabase"
 import type { Perfume } from "@/lib/types"
 import { getPerfumeImageUrl } from "@/lib/utils"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -104,7 +106,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Hero Section */}
       <section ref={heroRef} className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Desktop Image */}
@@ -114,8 +116,8 @@ export default function HomePage() {
             alt="Sahara Essence - Perfumes de Lujo"
             fill
             priority
-            quality={90}
-            className="object-cover"
+            quality={100}
+            className="object-cover scale-110"
             sizes="100vw"
           />
         </div>
@@ -128,10 +130,57 @@ export default function HomePage() {
             fill
             priority
             quality={90}
-            className="object-cover"
+            className="object-cover scale-110"
             sizes="100vw"
           />
         </div>
+
+        {/* Hero Overlay Content */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-10 md:pt-20 flex justify-center md:justify-start">
+          <div className="max-w-5xl w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="flex flex-col items-center md:items-start text-center md:text-left"
+            >
+              <h1 className="font-cormorant flex flex-col items-center mb-10 drop-shadow-2xl text-amber-600 dark:text-amber-400">
+                <span className="text-6xl md:text-9xl font-bold leading-none">SAHARA</span>
+                <div className="flex items-center gap-4 w-full mt-2 opacity-90">
+                  <div className="h-[1px] flex-1 bg-amber-600/50 dark:bg-amber-400/50" />
+                  <span className="text-xl md:text-3xl font-medium tracking-[0.3em] uppercase">Essence</span>
+                  <div className="h-[1px] flex-1 bg-amber-600/50 dark:bg-amber-400/50" />
+                </div>
+              </h1>
+              
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 md:gap-6">
+                <Link href="/catalog">
+                  <Button 
+                    size="lg" 
+                    className="magnetic-button bg-amber-600 hover:bg-amber-700 text-white rounded-full px-6 py-5 md:px-10 md:py-8 text-lg md:text-xl font-medium border-none shadow-xl"
+                  >
+                    Explorar Catálogo
+                    <ArrowRight className="ml-2 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/#sobre-nosotros">
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="glass-luxury text-white hover:bg-white/20 rounded-full px-6 py-5 md:px-10 md:py-8 text-lg md:text-xl font-medium border-white/30 backdrop-blur-md"
+                  >
+                    Nuestra Historia
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator Removed as requested */}
+
+        {/* Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
       </section>
 
       {/* Best Sellers Bento Grid Section */}
@@ -149,86 +198,90 @@ export default function HomePage() {
               {/* Perfumes Árabes - Large Card */}
               <Link
                 href="/catalog?family=Oriental"
-                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] to-[#958672] p-8 hover:scale-[1.02] transition-transform duration-300"
+                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] via-[#958672] to-[#635a4b] p-5 md:p-8 hover:scale-[1.02] transition-transform duration-500 shadow-xl"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-cormorant font-medium text-3xl md:text-4xl text-white mb-4">
+                  <div className="glass-luxury p-5 md:p-6 rounded-2xl inline-block max-w-[90%] md:max-w-fit">
+                    <h3 className="font-cormorant font-bold text-2xl md:text-5xl text-white mb-1 md:mb-2">
                       Perfumes Árabes
                     </h3>
-                    <p className="font-inter text-white/90 text-lg mb-6">
-                      Fragancias orientales intensas y cautivadoras
+                    <p className="font-inter text-white/80 text-base md:text-lg">
+                      Intensidad y Misterio Oriental
                     </p>
                   </div>
-                  <div className="flex items-center text-white font-inter font-medium">
+                  <div className="flex items-center text-white font-inter font-semibold bg-white/10 backdrop-blur-md px-5 py-2.5 md:px-6 md:py-3 rounded-full self-start group-hover:bg-white/20 transition-all text-sm md:text-base">
                     Explorar colección
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                    <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-[url('/hero_img.webp')] bg-cover bg-center opacity-20"></div>
+                <div className="absolute inset-0 bg-[url('/hero_img.webp')] bg-cover bg-center opacity-30 mix-blend-overlay group-hover:scale-110 transition-transform duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
               </Link>
 
               {/* Perfumes para Hombre */}
               <Link
                 href="/catalog?gender=Hombre"
-                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#cab195] p-6 hover:scale-[1.02] transition-transform duration-300"
+                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#cab195] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
-                <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
-                  <div>
-                    <h3 className="font-cormorant font-medium text-2xl text-white mb-3">
+                <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
+                  <div className="glass-luxury p-3.5 md:p-4 rounded-xl">
+                    <h3 className="font-cormorant font-bold text-xl md:text-2xl text-white mb-0.5 md:mb-1">
                       Para Hombre
                     </h3>
-                    <p className="font-inter text-white/90 text-sm">
-                      Masculinidad refinada
+                    <p className="font-inter text-white/70 text-xs md:text-sm">
+                      Refinamiento Masculino
                     </p>
                   </div>
-                  <div className="flex items-center text-white font-inter text-sm font-medium mt-4">
+                  <div className="flex items-center text-white font-inter text-xs md:text-sm font-semibold mt-4 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full self-start hover:bg-white/20 transition-all">
                     Ver más
                     <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                   </div>
                 </div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-amber-900/20 to-transparent"></div>
               </Link>
 
               {/* Perfumes para Mujer */}
               <Link
                 href="/catalog?gender=Mujer"
-                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#cab195] to-[#f9dfbd] p-6 hover:scale-[1.02] transition-transform duration-300"
+                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#cab195] to-[#f9dfbd] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
-                <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
-                  <div>
-                    <h3 className="font-cormorant font-medium text-2xl text-white mb-3">
+                <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
+                  <div className="glass-luxury p-3.5 md:p-4 rounded-xl">
+                    <h3 className="font-cormorant font-bold text-xl md:text-2xl text-white mb-0.5 md:mb-1">
                       Para Mujer
                     </h3>
-                    <p className="font-inter text-white/90 text-sm">
-                      Elegancia femenina
+                    <p className="font-inter text-white/70 text-xs md:text-sm">
+                      Elegancia Atemporal
                     </p>
                   </div>
-                  <div className="flex items-center text-white font-inter text-sm font-medium mt-4">
+                  <div className="flex items-center text-white font-inter text-xs md:text-sm font-semibold mt-4 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full self-start hover:bg-white/20 transition-all">
                     Ver más
                     <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                   </div>
                 </div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-orange-900/10 to-transparent"></div>
               </Link>
 
               {/* Unisex */}
               <Link
                 href="/catalog?gender=Unisex"
-                className="group lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#f9dfbd] p-6 hover:scale-[1.02] transition-transform duration-300"
+                className="group lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] via-[#cab195] to-[#f9dfbd] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
-                <div className="relative z-10 h-full flex flex-col justify-between min-h-[200px]">
-                  <div>
-                    <h3 className="font-cormorant font-medium text-2xl md:text-3xl text-white mb-3">
+                <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
+                  <div className="glass-luxury p-4 md:p-5 rounded-xl max-w-[240px] md:max-w-[280px]">
+                    <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-white mb-1 md:mb-2">
                       Fragancias Unisex
                     </h3>
-                    <p className="font-inter text-white/90">
-                      Sin límites, para todos
+                    <p className="font-inter text-white/80 text-sm md:text-base">
+                      Libertad sin límites
                     </p>
                   </div>
-                  <div className="flex items-center text-white font-inter font-medium mt-4">
+                  <div className="flex items-center text-white font-inter text-sm md:text-base font-semibold mt-4 bg-white/10 backdrop-blur-md px-5 py-2.5 md:px-6 md:py-3 rounded-full self-start hover:bg-white/20 transition-all">
                     Descubrir
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                    <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />
                   </div>
                 </div>
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-amber-600/20 to-transparent"></div>
               </Link>
             </div>
           </div>

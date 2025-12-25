@@ -130,7 +130,7 @@ export default function AIChatButton() {
         )}
       </AnimatePresence>
       
-      <div className="fixed bottom-10 right-5 z-50">
+      <div className="fixed bottom-6 md:bottom-10 right-4 md:right-5 z-50">
         <AnimatePresence mode="wait">
           {isOpen ? (
           <motion.div
@@ -281,7 +281,7 @@ export default function AIChatButton() {
                 aria-label="Abrir chat"
               >
                 <div className="relative">
-                    <MessageSquare size={24} strokeWidth={2.5} />
+                    <MessageSquare className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
                     {!hasBeenClicked && (
                         <span className="absolute -top-1 -right-1 flex h-3 w-3">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

@@ -28,8 +28,8 @@ export default function Footer() {
       {/* Decorative gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 pointer-events-none" />
       
-      <div className="relative max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12 mb-12">
+      <div className="relative max-w-7xl mx-auto px-4 py-10 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-10 md:gap-12 mb-10 md:mb-12">
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -125,20 +125,20 @@ export default function Footer() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="pt-8 border-t border-border"
         >
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="font-inter text-sm text-muted-foreground text-center md:text-left">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="font-inter text-xs md:text-sm text-muted-foreground text-center md:text-left">
               © {new Date().getFullYear()} Sahara Essence. Todos los derechos reservados.
             </p>
-            <div className="flex gap-6">
+            <div className="flex gap-4 md:gap-6">
               <Link
                 href="/faqs#politica-devoluciones"
-                className="font-inter text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                className="font-inter text-xs md:text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
               >
                 Política de Privacidad
               </Link>
               <Link
                 href="/faqs#terminos-condiciones"
-                className="font-inter text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                className="font-inter text-xs md:text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
               >
                 Términos de Uso
               </Link>

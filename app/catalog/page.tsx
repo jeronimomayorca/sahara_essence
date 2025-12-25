@@ -176,7 +176,7 @@ function CatalogContent() {
       .length + (searchTerm ? 1 : 0)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -187,10 +187,10 @@ function CatalogContent() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Buscar perfumes por nombre o marca..."
+                placeholder="Buscar perfumes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12 text-base"
+                className="pl-10 h-10 md:h-12 text-sm md:text-base bg-muted/50 border-none rounded-xl"
               />
             </div>
 
@@ -362,9 +362,9 @@ function CatalogContent() {
       </div>
 
       {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         <AnimatePresence mode="wait">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {paginatedPerfumes.map((perfume) => (
               <motion.div
                 key={perfume.id}
@@ -415,22 +415,22 @@ function CatalogContent() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-6">
-                        <div className="mb-2">
-                          <Badge variant="outline" className="text-xs font-inter font-medium">
+                      <div className="p-3 md:p-6">
+                        <div className="mb-1 md:mb-2">
+                          <Badge variant="outline" className="text-[10px] md:text-xs font-inter font-medium px-1.5 py-0 md:px-2.5 md:py-0.5">
                             {perfume.brand}
                           </Badge>
                         </div>
-                        <h3 className="font-cormorant font-medium text-xl mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                        <h3 className="font-cormorant font-medium text-base md:text-xl mb-1 md:mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
                           {perfume.name}
                         </h3>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                        <div className="flex items-center justify-between text-[10px] md:text-sm text-muted-foreground mb-1 md:mb-3">
                           <span className="font-inter">{perfume.gender}</span>
                           <span className="font-inter">{perfume.size}</span>
                         </div>
-                        <p className="font-inter text-sm text-muted-foreground mb-4">{perfume.family}</p>
+                        <p className="font-inter text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4 line-clamp-1">{perfume.family}</p>
                         <div className="flex items-center justify-between">
-                          <span className="font-cormorant font-medium text-2xl text-emerald-600 dark:text-emerald-400">
+                          <span className="font-cormorant font-medium text-lg md:text-2xl text-emerald-600 dark:text-emerald-400">
                             ${perfume.price.toLocaleString()}
                           </span>
                         </div>

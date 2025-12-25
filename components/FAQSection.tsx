@@ -177,6 +177,16 @@ const categories: FAQCategory[] = [
   }
 ];
 
+interface AccordionItemProps {
+  id: string;
+  icon: string;
+  title: string;
+  content: { subtitle?: string; lines: string[] }[];
+  index: number;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
 // --- Unified Component ---
 
 function AccordionItem({ 
@@ -205,14 +215,14 @@ function AccordionItem({
     >
       <button
         onClick={onToggle}
-        className="w-full p-6 md:p-8 flex items-center justify-between text-left gap-4 bg-gradient-to-r from-amber-50/30 to-orange-50/30 dark:from-amber-950/10 dark:to-orange-950/10 hover:from-amber-50/50 hover:to-orange-50/50 transition-colors"
+        className="w-full p-4 md:p-8 flex items-center justify-between text-left gap-3 md:gap-4 bg-gradient-to-r from-amber-50/30 to-orange-50/30 dark:from-amber-950/10 dark:to-orange-950/10 hover:from-amber-50/50 hover:to-orange-50/50 transition-colors"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <span className="text-3xl flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+        <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+          <span className="text-2xl md:text-3xl flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
             {icon}
           </span>
-          <h3 className="font-cormorant font-medium text-2xl md:text-3xl text-amber-600 dark:text-amber-400">
+          <h3 className="font-cormorant font-medium text-xl md:text-3xl text-amber-600 dark:text-amber-400 leading-tight">
             {title}
           </h3>
         </div>
@@ -221,7 +231,7 @@ function AccordionItem({
           transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="text-amber-600 dark:text-amber-400 flex-shrink-0"
         >
-          <ChevronDown size={28} />
+          <ChevronDown className="w-5 h-5 md:w-7 md:h-7" />
         </motion.div>
       </button>
 
@@ -234,30 +244,30 @@ function AccordionItem({
             transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="p-6 md:p-8 pt-0 border-t border-border/20 mt-2">
-              <div className="pt-6 space-y-8">
-                {content.map((section, sIdx) => (
-                  <div key={sIdx} className="space-y-4">
+            <div className="p-4 md:p-8 pt-0 border-t border-border/20 mt-1 md:mt-2">
+              <div className="pt-4 md:pt-6 space-y-6 md:space-y-8">
+                {content.map((section: { subtitle?: string; lines: string[] }, sIdx: number) => (
+                  <div key={sIdx} className="space-y-3 md:space-y-4">
                     {section.subtitle && (
                       <motion.h4 
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.4, delay: 0.1 }}
-                        className="font-inter font-medium text-lg text-foreground/90 border-l-2 border-amber-500/40 pl-4"
+                        className="font-inter font-medium text-base md:text-lg text-foreground/90 border-l-2 border-amber-500/40 pl-3 md:pl-4"
                       >
                         {section.subtitle}
                       </motion.h4>
                     )}
-                    <ul className={cn("space-y-3", !section.subtitle && "border-l-2 border-amber-500/40 pl-6")}>
-                      {section.lines.map((line, lIdx) => (
+                    <ul className={cn("space-y-2 md:space-y-3", !section.subtitle && "border-l-2 border-amber-500/40 pl-4 md:pl-6")}>
+                      {section.lines.map((line: string, lIdx: number) => (
                         <motion.li 
                           key={lIdx} 
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.4, delay: sIdx * 0.1 + lIdx * 0.05 }}
-                          className="text-muted-foreground text-base leading-relaxed flex items-start gap-3"
+                          className="text-muted-foreground text-sm md:text-base leading-relaxed flex items-start gap-2.5 md:gap-3"
                         >
-                          <span className="text-amber-600/60 mt-1.5">•</span>
+                          <span className="text-amber-600/60 mt-1 md:mt-1.5">•</span>
                           <span>{line}</span>
                         </motion.li>
                       ))}
@@ -299,7 +309,7 @@ export default function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="font-cormorant text-4xl md:text-5xl font-medium text-center mb-4 text-amber-600 dark:text-amber-400 scroll-mt-24"
+          className="font-cormorant text-3xl md:text-5xl font-medium text-center mb-3 md:mb-4 text-amber-600 dark:text-amber-400 scroll-mt-24"
         >
           Preguntas Frecuentes
         </motion.h2>
@@ -309,7 +319,7 @@ export default function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-inter text-center text-muted-foreground mb-12 max-w-2xl mx-auto"
+          className="font-inter text-sm md:text-base text-center text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto"
         >
           Encuentra respuestas a las preguntas más comunes sobre nuestros productos y servicios
         </motion.p>
