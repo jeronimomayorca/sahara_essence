@@ -121,9 +121,9 @@ export async function POST(req: NextRequest) {
     const explainedProducts = await Promise.all(products.map(async (p: any) => {
         try {
             const prompt = `
-                Explica en una frase breve y persuasiva por qué el perfume "${p.name}" (${p.brand}) es una buena recomendación para alguien que busca: "${userMessage}".
+                Explica en MÁXIMO 10 PALABRAS, de forma persuasiva y elegante por qué el perfume "${p.name}" (${p.brand}) es una elección exquisita para: "${userMessage}".
                 Usa la descripción: "${p.description}".
-                No inventes datos.
+                Sé directo impactante.
             `;
             const res = await geminiModel.generateContent(prompt);
             return {
@@ -140,10 +140,19 @@ export async function POST(req: NextRequest) {
     console.log("Step 5: Final summary...");
     const finalPrompt = `
         El usuario preguntó: "${userMessage}".
-        Le hemos encontrado estos perfumes:
+        Le hemos encontrado estos perfumes excepcionales:
         ${explainedProducts.map((p: any) => `- ${p.name} de ${p.brand}: ${p.reason}`).join("\n")}
         
-        Redacta una respuesta amable y natural presentando estas opciones. Sé breve.
+        Actúa como un *connoisseur* de perfumes amigo del usuario.
+        
+        INSTRUCCIONES DE RESPUESTA:
+        1. **SÉ EXTREMADAMENTE BREVE**: Tu respuesta completa NO debe superar las 40 palabras.
+        2. **SÉ DIRECTO**: Nada de "Hola", "Claro", "Aquí tienes". Ve al grano.
+        3. **Estilo Lujoso**: Usa vocabulario premium ("sublime", "joya").
+        4. **Visual**: Usa emojis de lujo (✨, 💎, 🌹) con moderación.
+
+        Ejemplo de respuesta ideal:
+        "✨ Para tu cita, *Il Sexuel* es la elección sublime; su dulzura embriagadora creará un aura inolvidable. 🌹 ¿Te atreves a probarlo?"
     `;
     
     const finalRes = await geminiModel.generateContent(finalPrompt);

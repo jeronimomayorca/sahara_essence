@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getPerfumeImageUrl } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Image from 'next/image';
 
@@ -148,8 +148,7 @@ export default function AIChatButton() {
                     <Sparkles size={16} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm md:text-base">Asistente de Perfumes</h3>
-                  <p className="text-[10px] md:text-xs opacity-80">Sahara Essence AI</p>
+                  <h3 className="font-semibold text-sm md:text-base">Aurora</h3>
                 </div>
               </div>
               <button
@@ -201,7 +200,7 @@ export default function AIChatButton() {
                                   <div className="relative h-32 w-full bg-gray-100 dark:bg-gray-900 group-hover:scale-105 transition-transform duration-500">
                                       {product.image ? (
                                            <Image 
-                                              src={product.image} 
+                                              src={getPerfumeImageUrl(product.image)} 
                                               alt={product.name} 
                                               fill 
                                               className="object-cover" 

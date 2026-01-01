@@ -108,7 +108,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Hero Section */}
-      <section ref={heroRef} className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className="hero-section relative min-h-screen flex items-start justify-center overflow-hidden pt-20 md:pt-32">
         {/* Desktop Image */}
         <div className="hero-image absolute inset-0 hidden md:block">
           <Image
@@ -136,7 +136,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero Overlay Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-10 md:pt-20 flex justify-center md:justify-start">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 flex justify-center md:justify-start">
           <div className="max-w-5xl w-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -144,7 +144,7 @@ export default function HomePage() {
               transition={{ duration: 1, delay: 0.5 }}
               className="flex flex-col items-center md:items-start text-center md:text-left"
             >
-              <h1 className="font-cormorant flex flex-col items-center mb-10 drop-shadow-2xl text-amber-600 dark:text-amber-400">
+              <h1 className="font-cormorant flex flex-col items-center pb-24 drop-shadow-2xl text-amber-600 dark:text-amber-400">
                 <span className="text-6xl md:text-9xl font-bold leading-none">SAHARA</span>
                 <div className="flex items-center gap-4 w-full mt-2 opacity-90">
                   <div className="h-[1px] flex-1 bg-amber-600/50 dark:bg-amber-400/50" />
@@ -153,7 +153,7 @@ export default function HomePage() {
                 </div>
               </h1>
               
-              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 md:gap-6">
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 md:gap-6 mt-20 md:mt-0">
                 <Link href="/catalog">
                   <Button 
                     size="lg" 
@@ -198,7 +198,7 @@ export default function HomePage() {
               {/* Perfumes Árabes - Large Card */}
               <Link
                 href="/catalog?family=Oriental"
-                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] via-[#958672] to-[#635a4b] p-5 md:p-8 hover:scale-[1.02] transition-transform duration-500 shadow-xl"
+                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] via-[#958672] to-[#635a4b] p-5 md:p-8 hover:scale-[1.02] transition-transform duration-500 shadow-xl min-h-[320px] sm:min-h-[350px]"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between">
                   <div className="glass-luxury p-5 md:p-6 rounded-2xl inline-block max-w-[90%] md:max-w-fit">
