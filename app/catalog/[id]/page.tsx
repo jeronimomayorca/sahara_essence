@@ -219,7 +219,7 @@ export default function PerfumeDetailPage() {
                 </div>
                 
                 <Button
-                  className="w-full bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-700 hover:to-amber-700 text-white"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
                   size="lg"
                   onClick={() => {
                     addToCart(perfume, 1)

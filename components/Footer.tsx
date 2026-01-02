@@ -38,7 +38,7 @@ export default function Footer() {
             transition={{ duration: 0.5 }}
             className="space-y-4"
           >
-            <h3 className="font-cormorant text-3xl font-semibold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+            <h3 className="font-cormorant text-3xl font-semibold text-amber-600 dark:text-amber-400">
               Sahara Essence
             </h3>
             <p className="font-inter text-sm text-muted-foreground leading-relaxed">

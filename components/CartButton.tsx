@@ -35,7 +35,7 @@ export function CartButton() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="relative bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 md:p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
+          className="relative bg-amber-600 text-white p-4 md:p-5 rounded-full shadow-lg hover:shadow-xl transition-all"
           aria-label="Abrir carrito"
         >
           <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />

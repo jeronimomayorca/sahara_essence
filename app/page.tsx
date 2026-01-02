@@ -292,7 +292,7 @@ export default function HomePage() {
       <section className="py-24 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div ref={addToRefs}>
-            <h2 className="font-cormorant font-medium text-4xl md:text-5xl mb-4 text-center text-amber-600 dark:text-amber-400">
+            <h2 className="font-cormorant font-medium text-4xl md:text-6xl mb-4 text-center text-amber-600 dark:text-amber-400">
               Fragancias Destacadas
             </h2>
             <p className="font-inter text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">

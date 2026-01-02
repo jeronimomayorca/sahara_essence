@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
 import { cn, getPerfumeImageUrl } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import Link from 'next/link';
 import Image from 'next/image';
 
 type Product = {
@@ -142,7 +143,7 @@ export default function AIChatButton() {
             className="relative w-[90vw] sm:w-100 md:w-[30rem] max-w-[95vw] h-[82vh] max-h-[700px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-4 text-white flex justify-between items-center shadow-md z-10">
+            <div className="bg-amber-600 p-4 text-white flex justify-between items-center shadow-md z-10">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-white/20 rounded-full">
                     <Sparkles size={16} />
@@ -190,11 +191,9 @@ export default function AIChatButton() {
                         className="flex gap-3 overflow-x-auto pb-4 w-full max-w-full px-1 snap-x no-scrollbar"
                       >
                           {message.data.map((product) => (
-                              <a 
+                              <Link 
                                 key={product.id} 
                                 href={`/catalog/${product.id}`}
-                                target="_blank"
-                                rel="noopener noreferrer" 
                                 className="min-w-[200px] max-w-[200px] bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl overflow-hidden shadow-sm flex-shrink-0 snap-center hover:shadow-md transition-shadow group flex flex-col cursor-pointer"
                               >
                                   <div className="relative h-32 w-full bg-gray-100 dark:bg-gray-900 group-hover:scale-105 transition-transform duration-500">
@@ -217,7 +216,7 @@ export default function AIChatButton() {
                                         ✨ {product.reason}
                                       </div>
                                   </div>
-                              </a>
+                              </Link>
                           ))}
                       </motion.div>
                   )}
@@ -276,7 +275,7 @@ export default function AIChatButton() {
                   setShowTooltip(false);
                   setIsOpen(true);
                 }}
-                className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 md:p-5 rounded-full shadow-xl hover:shadow-2xl transition-all z-50 ring-4 ring-amber-100/50 dark:ring-amber-900/20"
+                className="bg-amber-600 text-white p-4 md:p-5 rounded-full shadow-xl hover:shadow-2xl transition-all z-50 ring-4 ring-amber-100/50 dark:ring-amber-900/20"
                 aria-label="Abrir chat"
               >
                 <div className="relative">
