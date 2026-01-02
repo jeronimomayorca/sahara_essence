@@ -145,10 +145,10 @@ export default function HomePage() {
               className="flex flex-col items-center md:items-start text-center md:text-left"
             >
               <h1 className="font-cormorant flex flex-col items-center pb-24 drop-shadow-2xl text-amber-600 dark:text-amber-400">
-                <span className="text-6xl md:text-9xl font-bold leading-none">SAHARA</span>
+                <span className="text-7xl md:text-9xl font-bold leading-none">SAHARA</span>
                 <div className="flex items-center gap-4 w-full mt-2 opacity-90">
                   <div className="h-[1px] flex-1 bg-amber-600/50 dark:bg-amber-400/50" />
-                  <span className="text-xl md:text-3xl font-medium tracking-[0.3em] uppercase">Essence</span>
+                  <span className="text-2xl md:text-3xl font-medium tracking-[0.3em] uppercase">Essence</span>
                   <div className="h-[1px] flex-1 bg-amber-600/50 dark:bg-amber-400/50" />
                 </div>
               </h1>
