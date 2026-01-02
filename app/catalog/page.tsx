@@ -178,8 +178,8 @@ function CatalogContent() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="sticky top-3 z-40 bg-background/95 backdrop-blur-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 pt-6 pb-4">
           <div className="flex flex-col gap-4">
 
 
