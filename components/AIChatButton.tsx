@@ -30,15 +30,34 @@ export default function AIChatButton() {
   const [showTooltip, setShowTooltip] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: '¡Hola! Soy tu experto en perfumes. ¿Qué tipo de fragancia estás buscando hoy? (ej: algo fresco para oficina, dulce para una cita...)',
-      role: 'assistant',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const welcomeMessages = [
+      "Bienvenid@ a Sahara Essence. 🌹 Soy Aurora, tu experta en alta perfumería. Estoy aquí para encontrar ese aroma sublime que despierte tus sentidos. Cuéntame... ¿qué deseas transmitir hoy?",
+      "Hola... Soy Aurora. ✨ El perfume es el accesorio invisible más poderoso. ¿Buscas algo para seducir, para empoderarte o simplemente para disfrutar?",
+      "Un placer saludarte. Soy Aurora. 💎 La elegancia comienza con una buena fragancia. Cuéntame, ¿qué momento especial deseas eternizar con un aroma?",
+      "Bienvenid@. Soy Aurora. 🌹 Dicen que el olfato es el sentido de la memoria. ¿Qué recuerdo inolvidable quieres crear hoy?",
+      "Hola... Soy Aurora. 🌹 ¿Sabías que un perfume es la firma más íntima? Permíteme ayudarte a encontrar esa esencia que hable por ti sin decir una palabra.",
+      "Bienvenid@. ✨ Soy Aurora. Hoy es un buen día para descubrir un aroma que te haga sentir inolvidable. ¿Comenzamos este viaje sensorial?",
+      "Un placer recibirte. Soy Aurora. 💎 Busco fragancias con alma para personas con carácter. ¿Qué historia quieres que cuente tu perfume hoy?",
+      "Hola, soy Aurora. 🌹 La seducción es un arte, y tu perfume es tu mejor aliado. ¿Buscas algo sutil y misterioso, o intenso y magnético?",
+      "Bienvenid@ a mi rincón olfativo. Soy Aurora. ✨ Hay un perfume esperando ser tu secreto mejor guardado. ¿Te animas a descubrirlo conmigo?",
+      "Hola... Soy Aurora. 💎 Dicen que la elegancia es la única belleza que no se marchita. Encontremos esa fragancia que realce tu luz propia."
+    ];
+
+    const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+
+    setMessages([
+      {
+        id: '1',
+        content: randomMessage,
+        role: 'assistant',
+        timestamp: new Date(),
+      },
+    ]);
+  }, []);
 
   // Auto-close tooltip after 15 seconds
   useEffect(() => {

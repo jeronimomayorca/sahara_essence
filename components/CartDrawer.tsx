@@ -105,9 +105,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <p className="text-sm text-muted-foreground font-inter mb-6">
                       Agrega algunos perfumes para comenzar
                     </p>
-                    <Button onClick={onClose} variant="outline">
-                      Explorar Catálogo
-                    </Button>
+                    <Link href="/catalog" onClick={onClose} className="w-full">
+                      <Button variant="outline" className="w-full">
+                        Explorar Catálogo
+                      </Button>
+                    </Link>
                   </div>
                 ) : (
                   <div className="space-y-4">
