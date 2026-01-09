@@ -108,10 +108,27 @@ export async function POST(req: NextRequest) {
     console.log("Supabase returned rows:", recommendations?.length);
 
     // 5. Generate Explanation
+    // 5. Generate Explanation or Fallback
     if (!recommendations || recommendations.length === 0) {
+        console.log("No recommendations found. Generating consultative fallback...");
+        const fallbackPrompt = `
+            Eres un experto en perfumes (Aurora). El usuario preguntó: "${userMessage}".
+            INTENCIÓN: No encontramos perfumes exactos en el catálogo con los filtros actuales (Ocasión: ${preferences.occasion}, Familia: ${preferences.family}, etc.).
+            
+            TU TAREA:
+            Genera una respuesta amable y sofisticada (máximo 40 palabras) que:
+            1. Reconozca sutilmente que necesitamos afinar la búsqueda (sin decir "error" ni "no encontrado").
+            2. Le haga 1-2 preguntas clave al usuario para entender mejor lo que busca (ej: ¿Prefieres notas más frescas o dulces? ¿Es para una ocasión especial?).
+            3. Mantén la personalidad de Aurora: elegante, cálida, experta.
+        `;
+
+        const fallbackRes = await geminiModel.generateContent(fallbackPrompt);
+        const fallbackMessage = fallbackRes.response.text();
+
         return NextResponse.json({ 
             role: "assistant", 
-            content: "Lo siento, no encontré perfumes que coincidan exactamente con tu búsqueda. ¿Podrías darme más detalles o probar con otras preferencias?" 
+            content: fallbackMessage,
+            data: []
         });
     }
 
@@ -168,6 +185,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("--- API FATAL ERROR ---", error);
     // Return the specific error message to the client for the user to see in Network tab
-    return NextResponse.json({ error: error.message || "Internal Server Error", details: error.toString() }, { status: 500 });
+    return NextResponse.json({ 
+        role: "assistant",
+        content: "Lo siento, tuve un pequeño mareo olfativo. ¿Podrías repetirme tu pregunta? A veces las esencias son caprichosas.", 
+        error: error.message || "Internal Server Error" 
+    }, { status: 200 }); // Returning 200 so the UI doesn't break, but logging the error.
   }
 }
