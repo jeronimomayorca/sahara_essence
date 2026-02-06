@@ -1,0 +1,4 @@
+{
+  "error": "Unable to parse range: Sheet1!A:Z",
+  "stack": "Error: Unable to parse range: Sheet1!A:Z\n    at Gaxios._request (C:\\Users\\mayor\\Documents\\sahara_essence\\node_modules\\gaxios\\src\\gaxios.ts:213:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async JWT.requestAsync (C:\\Users\\mayor\\Documents\\sahara_essence\\node_modules\\google-auth-library\\build\\src\\auth\\oauth2client.js:463:20)\n    at async createAPIRequestAsync (C:\\Users\\mayor\\Documents\\sahara_essence\\node_modules\\googleapis-common\\build\\src\\apirequest.js:308:25)\n    at async readPerfumesFromSheet (C:\\Users\\mayor\\Documents\\sahara_essence\\scripts\\sync-from-sheets.ts:67:20)\n    at async main (C:\\Users\\mayor\\Documents\\sahara_essence\\scripts\\sync-from-sheets.ts:275:22)"
+}
