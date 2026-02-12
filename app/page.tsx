@@ -220,7 +220,7 @@ export default function HomePage() {
 
               {/* Perfumes para Hombre */}
               <Link
-                href="/catalog?gender=Hombre"
+                href="/catalog?gender=Masculino"
                 className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#cab195] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
@@ -242,7 +242,7 @@ export default function HomePage() {
 
               {/* Perfumes para Mujer */}
               <Link
-                href="/catalog?gender=Mujer"
+                href="/catalog?gender=Femenino"
                 className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#cab195] to-[#f9dfbd] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">

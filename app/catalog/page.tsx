@@ -113,27 +113,27 @@ function CatalogContent() {
   // Memoizar los arrays de filtros
   const brands = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.brand)))
+    ...Array.from(new Set(perfumes.map((p) => p.brand).filter((b) => b && b.trim() !== "")))
   ], [perfumes])
   const genders = useMemo(() => [
     "Todos",
-    ...Array.from(new Set(perfumes.map((p) => p.gender)))
+    ...Array.from(new Set(perfumes.map((p) => p.gender).filter((g) => g && g.trim() !== "")))
   ], [perfumes])
   const families = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.family)))
+    ...Array.from(new Set(perfumes.map((p) => p.family).filter((f) => f && f.trim() !== "")))
   ], [perfumes])
   
   const concentrations = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter((c): c is string => c !== undefined && c !== null)))
+    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter((c): c is string => !!c && c.trim() !== "")))
   ], [perfumes])
 
   const filteredPerfumes = useMemo(() => {
     return perfumes.filter((perfume) => {
       const matchesSearch =
-        perfume.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        perfume.brand.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+        (perfume.name || "").toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        (perfume.brand || "").toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       const matchesBrand = selectedBrand === "Todas" || perfume.brand === selectedBrand
       const matchesGender = selectedGender === "Todos" || perfume.gender === selectedGender
       const matchesFamily = selectedFamily === "Todas" || perfume.family === selectedFamily

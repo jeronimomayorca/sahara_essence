@@ -56,7 +56,85 @@ export default function PerfumeDetailPage() {
           console.error('Error loading perfume:', error)
           setPerfume(null)
         } else {
-          setPerfume(data)
+          // Normalización de datos
+          const normalizedPerfume = { ...data }
+
+          // 1. Normalizar Notes
+          if (Array.isArray(data.notes)) {
+             try {
+                // Caso: El backend devolvió un array de strings que son fragmentos de un JSON roto
+                // Ejemplo: ['{"top":["Ozono"', '"Pomelo"...']
+                // Intentamos unirlo y parsearlo si parece un JSON roto
+                const rawNotesString = data.notes.join(',')
+                // Limpiamos caracteres extraños si es necesario, o intentamos parsear directo si al unir recobró la forma
+                // A veces postgres text[] splittea por comas ignorando comillas si no está bien escapado.
+                // Si al unir con comas se forma un JSON válido, genial.
+                
+                // Hack: Si el primer elemento empieza con "{" y el último termina con "}", asumimos que es un objeto desparramado
+                if (rawNotesString.trim().startsWith('{') && rawNotesString.trim().endsWith('}')) {
+                   const parsedNotes = JSON.parse(rawNotesString)
+                   normalizedPerfume.notes = parsedNotes
+                } else if (data.notes.length === 1 && typeof data.notes[0] === 'string') {
+                    // Caso: Un solo string que es JSON
+                    try {
+                        normalizedPerfume.notes = JSON.parse(data.notes[0])
+                    } catch (e) {
+                         console.warn("Failed to parse single string note", e)
+                    }
+                }
+             } catch (e) {
+                console.warn("Error normalizando notes:", e)
+                // Si falla, dejamos lo que había o un objeto vacío seguro
+                normalizedPerfume.notes = { top: [], middle: [], base: [] }
+             }
+          } else if (typeof data.notes === 'string') {
+              try {
+                  normalizedPerfume.notes = JSON.parse(data.notes)
+              } catch (e) {
+                   normalizedPerfume.notes = { top: [], middle: [], base: [] }
+              }
+          }
+
+          // Asegurar estructura mínima de notes
+          if (!normalizedPerfume.notes || typeof normalizedPerfume.notes !== 'object') {
+              normalizedPerfume.notes = { top: [], middle: [], base: [] }
+          }
+           // Garantizar arrays
+          normalizedPerfume.notes.top = Array.isArray(normalizedPerfume.notes.top) ? normalizedPerfume.notes.top : []
+          normalizedPerfume.notes.middle = Array.isArray(normalizedPerfume.notes.middle) ? normalizedPerfume.notes.middle : []
+          normalizedPerfume.notes.base = Array.isArray(normalizedPerfume.notes.base) ? normalizedPerfume.notes.base : []
+
+
+          // 2. Normalizar Occasion
+          if (typeof data.occasion === 'string') {
+            try {
+               // Si empieza con [, es un array JSON
+               if (data.occasion.trim().startsWith('[')) {
+                   normalizedPerfume.occasion = JSON.parse(data.occasion)
+               } else {
+                   // Si es texto plano separado por comas o barras
+                   normalizedPerfume.occasion = [data.occasion]
+               }
+            } catch (e) {
+                normalizedPerfume.occasion = [data.occasion]
+            }
+          } else if (!Array.isArray(data.occasion)) {
+              normalizedPerfume.occasion = []
+          }
+
+          // 3. Normalizar Season
+          if (typeof data.season === 'string') {
+              // Si tiene barras, separar
+               if (data.season.includes('/')) {
+                   normalizedPerfume.season = data.season.split('/').map(s => s.trim())
+               } else {
+                   normalizedPerfume.season = [data.season]
+               }
+          } else if (!Array.isArray(data.season)) {
+               normalizedPerfume.season = []
+          }
+
+          setPerfume(normalizedPerfume as Perfume)
         }
       } catch (err) {
         console.error('Error:', err)
@@ -243,7 +321,7 @@ export default function PerfumeDetailPage() {
                 <Card>
                   <CardContent className="p-4 text-center">
                     <p className="font-inter font-medium text-sm text-muted-foreground mb-1">Duración</p>
-                    <p className="font-cormorant font-medium">{perfume.longevity}</p>
+                    <p className="font-cormorant font-medium">{perfume.longevity || "Moderada"}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -278,7 +356,7 @@ export default function PerfumeDetailPage() {
               <CardContent className="p-6">
                 <h3 className="font-cormorant font-bold text-xl mb-4 text-center">Notas de Salida</h3>
                 <div className="space-y-3">
-                  {perfume.notes.top.map((note, index) => {
+                  {(perfume.notes?.top || []).map((note, index) => {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || Droplets
                     return (
                       <motion.div
@@ -304,7 +382,7 @@ export default function PerfumeDetailPage() {
               <CardContent className="p-6">
                 <h3 className="font-cormorant font-bold text-xl mb-4 text-center">Notas de Corazón</h3>
                 <div className="space-y-3">
-                  {perfume.notes.middle.map((note, index) => {
+                  {(perfume.notes?.middle || []).map((note, index) => {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || Flower
                     return (
                       <motion.div
@@ -330,7 +408,7 @@ export default function PerfumeDetailPage() {
               <CardContent className="p-6">
                 <h3 className="font-cormorant font-bold text-xl mb-4 text-center">Notas de Fondo</h3>
                 <div className="space-y-3">
-                  {perfume.notes.base.map((note, index) => {
+                  {(perfume.notes?.base || []).map((note, index) => {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || TreePine
                     return (
                       <motion.div
@@ -436,7 +514,7 @@ export default function PerfumeDetailPage() {
                   </div>
                   <h3 className="font-cormorant font-bold text-xl mb-4">Longevidad</h3>
                   <p className="font-inter text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
-                    {perfume.longevity}
+                    {perfume.longevity || "Moderada"}
                   </p>
                   <p className="font-inter text-sm text-muted-foreground">Duración en la piel</p>
                 </CardContent>
@@ -456,7 +534,7 @@ export default function PerfumeDetailPage() {
                   </div>
                   <h3 className="font-cormorant font-bold text-xl mb-4">Sillage</h3>
                   <p className="font-inter text-2xl font-bold text-amber-600 dark:text-amber-400 mb-2">
-                    {perfume.sillage}
+                    {perfume.sillage || "Moderada"}
                   </p>
                   <p className="font-inter text-sm text-muted-foreground">Proyección del aroma</p>
                 </CardContent>
