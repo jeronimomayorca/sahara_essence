@@ -14,7 +14,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import type { Perfume } from "@/lib/types"
-import { getPerfumeImageUrl } from "@/lib/utils"
+import { getPerfumeImageUrl, parseNotes } from '@/lib/utils'
 
 // Hook de debounce
 function useDebounce<T>(value: T, delay: number): T {
@@ -113,27 +113,27 @@ function CatalogContent() {
   // Memoizar los arrays de filtros
   const brands = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.brand)))
+    ...Array.from(new Set(perfumes.map((p) => p.brand).filter((b) => b && b.trim() !== "")))
   ], [perfumes])
   const genders = useMemo(() => [
     "Todos",
-    ...Array.from(new Set(perfumes.map((p) => p.gender)))
+    ...Array.from(new Set(perfumes.map((p) => p.gender).filter((g) => g && g.trim() !== "")))
   ], [perfumes])
   const families = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.family)))
+    ...Array.from(new Set(perfumes.map((p) => p.family).filter((f) => f && f.trim() !== "")))
   ], [perfumes])
   
   const concentrations = useMemo(() => [
     "Todas",
-    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter((c): c is string => c !== undefined && c !== null)))
+    ...Array.from(new Set(perfumes.map((p) => p.concentration).filter((c): c is string => !!c && c.trim() !== "")))
   ], [perfumes])
 
   const filteredPerfumes = useMemo(() => {
     return perfumes.filter((perfume) => {
       const matchesSearch =
-        perfume.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        perfume.brand.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+        (perfume.name || "").toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        (perfume.brand || "").toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       const matchesBrand = selectedBrand === "Todas" || perfume.brand === selectedBrand
       const matchesGender = selectedGender === "Todos" || perfume.gender === selectedGender
       const matchesFamily = selectedFamily === "Todas" || perfume.family === selectedFamily
@@ -388,29 +388,15 @@ function CatalogContent() {
                         <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="space-y-2">
                             <div className="flex flex-wrap gap-1">
-                              {(() => {
-                                let notesArr: string[] = [];
-                                if (Array.isArray(perfume.notes)) {
-                                  notesArr = perfume.notes;
-                                } else if (perfume.notes && typeof perfume.notes === 'object') {
-                                  // Forzar el tipado para evitar error de TS
-                                  const notesObj = perfume.notes as Record<string, string[]>;
-                                  if (Array.isArray(notesObj.top)) {
-                                    notesArr = notesObj.top;
-                                  } else {
-                                    notesArr = Object.values(notesObj).flatMap((v) => v);
-                                  }
-                                }
-                                return notesArr.slice(0, 2).map((note, i) => (
-                                  <Badge
-                                    key={i}
-                                    variant="secondary"
-                                    className="text-xs bg-white/20 text-white border-white/30"
-                                  >
-                                    {note}
-                                  </Badge>
-                                ));
-                              })()}
+                              {parseNotes(perfume.notes).slice(0, 3).map((note, i) => (
+                                <Badge
+                                  key={i}
+                                  variant="secondary"
+                                  className="text-xs bg-white/20 text-white border-white/30"
+                                >
+                                  {note}
+                                </Badge>
+                              ))}
                             </div>
                           </div>
                         </div>

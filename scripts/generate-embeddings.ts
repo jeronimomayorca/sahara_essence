@@ -15,7 +15,7 @@ if (!supabaseUrl || !supabaseServiceKey || !googleApiKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const genAI = new GoogleGenerativeAI(googleApiKey);
-const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
 async function generateEmbeddings() {
   console.log("Fetching perfumes...");
@@ -44,8 +44,12 @@ Temporada: ${perfume.season || ""}.
 `.trim();
 
     try {
-      const result = await model.embedContent(textForEmbedding);
+      const result = await model.embedContent({
+        content: { role: "user", parts: [{ text: textForEmbedding }] },
+        outputDimensionality: 768
+      } as any);
       const embedding = result.embedding.values;
+      console.log(`Generated embedding for ${perfume.name}, length: ${embedding.length}`);
 
       const { error: updateError } = await supabase
         .from("perfumes")
