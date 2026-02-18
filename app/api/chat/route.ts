@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     // Initialize Gemini Client Per-Request to ensure Env var is fresh
     const genAI = new GoogleGenerativeAI(apiKey);
     const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+    const embeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
     const body = await req.json();
     const { messages } = body;
@@ -81,7 +81,10 @@ export async function POST(req: NextRequest) {
     
     let embedding = [];
     try {
-        const embeddingResult = await embeddingModel.embedContent(semanticQuery);
+        const embeddingResult = await embeddingModel.embedContent({
+            content: { role: "user", parts: [{ text: semanticQuery }] },
+            outputDimensionality: 768
+        } as any);
         embedding = embeddingResult.embedding.values;
         console.log("Embedding generated. Length:", embedding.length);
     } catch (e: any) {
