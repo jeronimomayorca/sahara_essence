@@ -81,21 +81,94 @@ export default function PerfumeDetailPage() {
           setPerfume(null)
         } else {
           // Normalización de datos
-          const normalizedPerfume = { ...data }
+          const normalizedPerfume = { ...(data as any) }
 
           // Normalize notes → clean {top, middle, base} using parseNotes per key
-          const rawNotes = data.notes;
-          let notesObj: { top: string[]; middle: string[]; base: string[] };
-          if (rawNotes && typeof rawNotes === 'object' && !Array.isArray(rawNotes)) {
-            notesObj = {
-              top: parseNotes({ top: (rawNotes as any).top }),
-              middle: parseNotes({ middle: (rawNotes as any).middle }),
-              base: parseNotes({ base: (rawNotes as any).base }),
-            };
-          } else {
-            notesObj = { top: parseNotes(rawNotes), middle: [], base: [] };
+
+          const rawNotes = data.notes
+          let parsedNotes: any = rawNotes
+
+          // Attempt to parse stringified JSON manually to preserve structure
+          if (typeof rawNotes === "string") {
+            try {
+              const trimmed = rawNotes.trim()
+              if (trimmed.startsWith("{")) {
+                parsedNotes = JSON.parse(trimmed)
+              }
+            } catch {}
           }
-          normalizedPerfume.notes = notesObj;
+
+          let notesObj: { top: string[]; middle: string[]; base: string[] } = { top: [], middle: [], base: [] }
+
+          // Special handling for corrupted data where everything is in 'top' array as string fragments
+          // e.g. ["\"top\":[\"Ozono\"", "Pomelo", "\"Ciruela\"", "base\":[\"Cedro", ...]
+          if (
+            parsedNotes &&
+            typeof parsedNotes === "object" &&
+            "top" in parsedNotes &&
+            Array.isArray((parsedNotes as { top: unknown[] }).top) &&
+            (parsedNotes as { top: unknown[] }).top.some(
+              (s: unknown) =>
+                typeof s === "string" &&
+                (s.includes("middle:[") ||
+                  s.includes("base:[") ||
+                  s.includes("top:[") ||
+                  s.includes('"middle":[') ||
+                  s.includes('"base":[') ||
+                  s.includes('"top":[')),
+            )
+          ) {
+            let currentCategory: "top" | "middle" | "base" = "top"
+            const exactNotes: { top: string[]; middle: string[]; base: string[] } = {
+              top: [],
+              middle: [],
+              base: [],
+            }
+
+            const topArray = (parsedNotes as { top: unknown[] }).top
+            topArray.forEach((item: unknown) => {
+              if (typeof item !== "string") return
+
+              let cleanItem = item
+
+              // Check for category change markers
+              if (item.match(/top\s*"?\s*:\s*\[/i) || item.match(/salida\s*"?\s*:\s*\[/i)) {
+                currentCategory = "top"
+                cleanItem = item.replace(/.*(?:top|salida)\s*"?\s*:\s*\[/i, "")
+              } else if (
+                item.match(/middle\s*"?\s*:\s*\[/i) ||
+                item.match(/corazon\s*"?\s*:\s*\[/i) ||
+                item.match(/heart\s*"?\s*:\s*\[/i)
+              ) {
+                currentCategory = "middle"
+                cleanItem = item.replace(/.*(?:middle|corazon|heart)\s*"?\s*:\s*\[/i, "")
+              } else if (
+                item.match(/base\s*"?\s*:\s*\[/i) ||
+                item.match(/fondo\s*"?\s*:\s*\[/i) ||
+                item.match(/bottom\s*"?\s*:\s*\[/i)
+              ) {
+                currentCategory = "base"
+                cleanItem = item.replace(/.*(?:base|fondo|bottom)\s*"?\s*:\s*\[/i, "")
+              }
+
+              // Clean up the item (remove quotes, brackets, braces)
+              cleanItem = cleanItem.replace(/[\]}"'`]+/g, "").trim()
+
+              if (cleanItem) {
+                exactNotes[currentCategory].push(cleanItem)
+              }
+            })
+            notesObj = exactNotes
+          } else if (parsedNotes && typeof parsedNotes === "object" && !Array.isArray(parsedNotes)) {
+            notesObj = {
+              top: parseNotes((parsedNotes as Record<string, unknown>).top || (parsedNotes as Record<string, unknown>).salida),
+              middle: parseNotes((parsedNotes as Record<string, unknown>).middle || (parsedNotes as Record<string, unknown>).corazon || (parsedNotes as Record<string, unknown>).heart),
+              base: parseNotes((parsedNotes as Record<string, unknown>).base || (parsedNotes as Record<string, unknown>).bottom || (parsedNotes as Record<string, unknown>).fondo),
+            }
+          } else {
+            notesObj = { top: parseNotes(parsedNotes), middle: [], base: [] }
+          }
+          normalizedPerfume.notes = notesObj
 
           // Normalize occasion and season into clean string arrays
           normalizedPerfume.occasion = parseItems(data.occasion);
@@ -314,7 +387,7 @@ export default function PerfumeDetailPage() {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || Droplets
                     return (
                       <motion.div
-                        key={note}
+                        key={`${note}-${index}`}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -340,7 +413,7 @@ export default function PerfumeDetailPage() {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || Flower
                     return (
                       <motion.div
-                        key={note}
+                        key={`${note}-${index}`}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
@@ -366,7 +439,7 @@ export default function PerfumeDetailPage() {
                     const Icon = noteIcons[note as keyof typeof noteIcons] || TreePine
                     return (
                       <motion.div
-                        key={note}
+                        key={`${note}-${index}`}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 + 0.6 }}
