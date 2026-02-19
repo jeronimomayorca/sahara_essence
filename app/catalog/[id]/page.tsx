@@ -15,7 +15,31 @@ import { supabase } from "@/lib/supabase"
 import { addToCart } from "@/lib/cart"
 import type { Perfume } from "@/lib/types"
 import { toast } from "sonner"
-import { getPerfumeImageUrl } from "@/lib/utils"
+import { getPerfumeImageUrl, parseNotes } from "@/lib/utils"
+
+/** Strips quotes, JSON artifacts and bracket wrappers from a plain text field */
+function cleanField(value: unknown): string {
+  if (!value || typeof value !== 'string') return '';
+  let s = value.trim();
+  if ((s.startsWith('[') && s.endsWith(']')) || (s.startsWith('{') && s.endsWith('}'))) {
+    try { const p = JSON.parse(s); return Array.isArray(p) ? p.join(', ') : String(p); } catch { s = s.slice(1, -1); }
+  }
+  return s.replace(/["“”‘’`\\]/g, '').replace(/^\w+:\s*/g, '').trim();
+}
+
+/** Splits a comma/separator string or JSON array into clean items */
+function parseItems(value: unknown): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return (value as unknown[]).map(String).map(cleanField).filter(Boolean);
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.startsWith('[')) {
+      try { return (JSON.parse(trimmed) as string[]).map(cleanField).filter(Boolean); } catch {}
+    }
+    return trimmed.split(/[,/]/).map(cleanField).filter(Boolean);
+  }
+  return [];
+}
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -59,80 +83,23 @@ export default function PerfumeDetailPage() {
           // Normalización de datos
           const normalizedPerfume = { ...data }
 
-          // 1. Normalizar Notes
-          if (Array.isArray(data.notes)) {
-             try {
-                // Caso: El backend devolvió un array de strings que son fragmentos de un JSON roto
-                // Ejemplo: ['{"top":["Ozono"', '"Pomelo"...']
-                // Intentamos unirlo y parsearlo si parece un JSON roto
-                const rawNotesString = data.notes.join(',')
-                // Limpiamos caracteres extraños si es necesario, o intentamos parsear directo si al unir recobró la forma
-                // A veces postgres text[] splittea por comas ignorando comillas si no está bien escapado.
-                // Si al unir con comas se forma un JSON válido, genial.
-                
-                // Hack: Si el primer elemento empieza con "{" y el último termina con "}", asumimos que es un objeto desparramado
-                if (rawNotesString.trim().startsWith('{') && rawNotesString.trim().endsWith('}')) {
-                   const parsedNotes = JSON.parse(rawNotesString)
-                   normalizedPerfume.notes = parsedNotes
-                } else if (data.notes.length === 1 && typeof data.notes[0] === 'string') {
-                    // Caso: Un solo string que es JSON
-                    try {
-                        normalizedPerfume.notes = JSON.parse(data.notes[0])
-                    } catch (e) {
-                         console.warn("Failed to parse single string note", e)
-                    }
-                }
-             } catch (e) {
-                console.warn("Error normalizando notes:", e)
-                // Si falla, dejamos lo que había o un objeto vacío seguro
-                normalizedPerfume.notes = { top: [], middle: [], base: [] }
-             }
-          } else if (typeof data.notes === 'string') {
-              try {
-                  normalizedPerfume.notes = JSON.parse(data.notes)
-              } catch (e) {
-                   normalizedPerfume.notes = { top: [], middle: [], base: [] }
-              }
+          // Normalize notes → clean {top, middle, base} using parseNotes per key
+          const rawNotes = data.notes;
+          let notesObj: { top: string[]; middle: string[]; base: string[] };
+          if (rawNotes && typeof rawNotes === 'object' && !Array.isArray(rawNotes)) {
+            notesObj = {
+              top: parseNotes({ top: (rawNotes as any).top }),
+              middle: parseNotes({ middle: (rawNotes as any).middle }),
+              base: parseNotes({ base: (rawNotes as any).base }),
+            };
+          } else {
+            notesObj = { top: parseNotes(rawNotes), middle: [], base: [] };
           }
+          normalizedPerfume.notes = notesObj;
 
-          // Asegurar estructura mínima de notes
-          if (!normalizedPerfume.notes || typeof normalizedPerfume.notes !== 'object') {
-              normalizedPerfume.notes = { top: [], middle: [], base: [] }
-          }
-           // Garantizar arrays
-          normalizedPerfume.notes.top = Array.isArray(normalizedPerfume.notes.top) ? normalizedPerfume.notes.top : []
-          normalizedPerfume.notes.middle = Array.isArray(normalizedPerfume.notes.middle) ? normalizedPerfume.notes.middle : []
-          normalizedPerfume.notes.base = Array.isArray(normalizedPerfume.notes.base) ? normalizedPerfume.notes.base : []
-
-
-          // 2. Normalizar Occasion
-          if (typeof data.occasion === 'string') {
-            try {
-               // Si empieza con [, es un array JSON
-               if (data.occasion.trim().startsWith('[')) {
-                   normalizedPerfume.occasion = JSON.parse(data.occasion)
-               } else {
-                   // Si es texto plano separado por comas o barras
-                   normalizedPerfume.occasion = [data.occasion]
-               }
-            } catch (e) {
-                normalizedPerfume.occasion = [data.occasion]
-            }
-          } else if (!Array.isArray(data.occasion)) {
-              normalizedPerfume.occasion = []
-          }
-
-          // 3. Normalizar Season
-          if (typeof data.season === 'string') {
-              // Si tiene barras, separar
-               if (data.season.includes('/')) {
-                   normalizedPerfume.season = data.season.split('/').map(s => s.trim())
-               } else {
-                   normalizedPerfume.season = [data.season]
-               }
-          } else if (!Array.isArray(data.season)) {
-               normalizedPerfume.season = []
-          }
+          // Normalize occasion and season into clean string arrays
+          normalizedPerfume.occasion = parseItems(data.occasion);
+          normalizedPerfume.season = parseItems(data.season);
 
           setPerfume(normalizedPerfume as Perfume)
         }
@@ -277,23 +244,10 @@ export default function PerfumeDetailPage() {
               </div>
 
               <div className="detail-item">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-center mb-6">
                   <span className="font-cormorant font-bold text-4xl text-emerald-600 dark:text-emerald-400">
                     ${perfume.price.toLocaleString()}
                   </span>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setIsLiked(!isLiked)}
-                      className={`transition-colors ${isLiked ? "text-red-500 border-red-500" : ""}`}
-                    >
-                      <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                  </div>
                 </div>
                 
                 <Button
@@ -448,14 +402,12 @@ export default function PerfumeDetailPage() {
 
             <div className="grid md:grid-cols-2 gap-8 mt-12">
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex flex-col items-center">
                   <h3 className="font-cormorant font-bold text-xl mb-4">Estaciones Ideales</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 justify-center">
                     {Array.isArray(perfume.season) && perfume.season.length > 0 ? (
                       perfume.season.map((season) => (
-                        <Badge key={season} variant="secondary" className="font-inter">
-                          {season}
-                        </Badge>
+                        <Badge key={season} variant="secondary" className="font-inter">{season}</Badge>
                       ))
                     ) : (
                       <span className="text-sm text-muted-foreground">Todo el año</span>
@@ -465,14 +417,12 @@ export default function PerfumeDetailPage() {
               </Card>
 
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex flex-col items-center">
                   <h3 className="font-cormorant font-bold text-xl mb-4">Ocasiones</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 justify-center">
                     {Array.isArray(perfume.occasion) && perfume.occasion.length > 0 ? (
                       perfume.occasion.map((occasion) => (
-                        <Badge key={occasion} variant="secondary" className="font-inter">
-                          {occasion}
-                        </Badge>
+                        <Badge key={occasion} variant="secondary" className="font-inter">{occasion}</Badge>
                       ))
                     ) : (
                       <span className="text-sm text-muted-foreground">Versátil</span>
