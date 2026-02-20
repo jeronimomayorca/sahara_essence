@@ -11,16 +11,15 @@ function PageLoaderContent() {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    // Mostrar loader al cambiar de ruta
+    // Mostrar loader SOLO al cambiar de ruta (pathname), no params
     setIsLoading(true)
     
-    // Ocultar loader después de un breve delay
     const timer = setTimeout(() => {
       setIsLoading(false)
     }, 800)
 
     return () => clearTimeout(timer)
-  }, [pathname, searchParams])
+  }, [pathname]) // Removed searchParams from dependencies
 
   // Mostrar loader en la carga inicial
   useEffect(() => {

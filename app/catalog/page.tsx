@@ -35,7 +35,7 @@ type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'brand
 
 const sortPerfumes = (perfumes: Perfume[], sortBy: SortOption): Perfume[] => {
   const sorted = [...perfumes]
-  
+
   switch (sortBy) {
     case 'name-asc':
       return sorted.sort((a, b) => a.name.localeCompare(b.name))
@@ -123,7 +123,7 @@ function CatalogContent() {
     "Todas",
     ...Array.from(new Set(perfumes.map((p) => p.family).filter((f) => f && f.trim() !== "")))
   ], [perfumes])
-  
+
   const concentrations = useMemo(() => [
     "Todas",
     ...Array.from(new Set(perfumes.map((p) => p.concentration).filter((c): c is string => !!c && c.trim() !== "")))
@@ -178,8 +178,8 @@ function CatalogContent() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
-      <div className="sticky top-3 z-40 bg-background/95 backdrop-blur-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 pt-6 pb-4">
+      <div className="sticky top-3 z-40 bg-background/95 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 pt-2 pb-2">
           <div className="flex flex-col gap-4">
 
 
@@ -197,7 +197,7 @@ function CatalogContent() {
             <div className="flex items-center justify-center">
               <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="md:hidden relative bg-transparent">
+                  <Button variant="outline" className="lg:hidden relative bg-transparent">
                     <Filter className="w-4 h-4 mr-2" />
                     Filtros
                     {activeFiltersCount > 0 && (
@@ -285,12 +285,14 @@ function CatalogContent() {
             </div>
 
             {/* Desktop Filters */}
-            <div className="hidden md:flex items-center gap-3 flex-wrap justify-between">
+            <div className="hidden lg:flex items-center gap-3 flex-wrap justify-between">
               <span className="font-cormorant">Filtrar por:</span>
-              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Marca</h2>
+              
               <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Marca" />
+                <SelectTrigger className="w-40 font-cormorant text-lg text-emerald-600 dark:text-emerald-400">
+                  <span className="truncate">
+                    {selectedBrand === "Todas" ? "Marca" : selectedBrand}
+                  </span>
                 </SelectTrigger>
                 <SelectContent>
                   {brands.map((brand) => (
@@ -300,10 +302,12 @@ function CatalogContent() {
                   ))}
                 </SelectContent>
               </Select>
-              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Genero</h2>
+
               <Select value={selectedGender} onValueChange={setSelectedGender}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Género" />
+                <SelectTrigger className="w-32 font-cormorant text-lg text-emerald-600 dark:text-emerald-400">
+                  <span className="truncate">
+                    {selectedGender === "Todos" ? "Género" : selectedGender}
+                  </span>
                 </SelectTrigger>
                 <SelectContent>
                   {genders.map((gender) => (
@@ -314,10 +318,11 @@ function CatalogContent() {
                 </SelectContent>
               </Select>
 
-              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Familia Olfativa</h2>
               <Select value={selectedFamily} onValueChange={setSelectedFamily}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Familia Olfativa" />
+                <SelectTrigger className="w-48 font-cormorant text-lg text-emerald-600 dark:text-emerald-400">
+                  <span className="truncate">
+                    {selectedFamily === "Todas" ? "Familia Olfativa" : selectedFamily}
+                  </span>
                 </SelectTrigger>
                 <SelectContent side="bottom">
                   {families.map((family) => (
@@ -328,10 +333,11 @@ function CatalogContent() {
                 </SelectContent>
               </Select>
 
-              <h2 className="font-cormorant text-lg text-emerald-600 dark:text-emerald-400">Concentración</h2>
               <Select value={selectedConcentration} onValueChange={setSelectedConcentration}>
-                <SelectTrigger className="w-44">
-                  <SelectValue placeholder="Concentración" />
+                <SelectTrigger className="w-44 font-cormorant text-lg text-emerald-600 dark:text-emerald-400">
+                  <span className="truncate">
+                    {selectedConcentration === "Todas" ? "Concentración" : selectedConcentration}
+                  </span>
                 </SelectTrigger>
                 <SelectContent>
                   {concentrations.map((concentration) => (
@@ -362,9 +368,9 @@ function CatalogContent() {
       </div>
 
       {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+      <div className="max-w-2xl lg:max-w-6xl mx-auto px-4 py-6 md:py-8">
         <AnimatePresence mode="wait">
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 md:gap-6">
             {paginatedPerfumes.map((perfume) => (
               <motion.div
                 key={perfume.id}

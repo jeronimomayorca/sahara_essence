@@ -40,7 +40,7 @@ export function Navigation() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
         isScrolled 
           ? "glass-luxury py-1 shadow-lg border-white/10" 
-          : "bg-background/40 backdrop-blur-md py-4 border-transparent"
+          : "bg-background/40 backdrop-blur-md py-1 border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4">

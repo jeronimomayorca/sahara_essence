@@ -159,7 +159,7 @@ export default function AIChatButton() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'tween', duration: 0.2 }}
-            className="relative w-[90vw] sm:w-100 md:w-[30rem] max-w-[95vw] h-[82vh] max-h-[700px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
+            className="relative w-[90vw] sm:w-100 md:w-[30rem] max-w-[95vw] h-[80vh] max-h-[700px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
           >
             {/* Header */}
             <div className="bg-amber-600 p-4 text-white flex justify-between items-center shadow-md z-10">
@@ -173,7 +173,7 @@ export default function AIChatButton() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+                className=" rounded-full hover:bg-white/20 transition-colors"
                 aria-label="Cerrar chat"
               >
                 <X size={18} />
@@ -181,7 +181,7 @@ export default function AIChatButton() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/50 dark:bg-gray-900/50">
+            <div className="flex-1 p-2 overflow-y-auto space-y-4 bg-gray-50/50 dark:bg-gray-900/50">
               {messages.map((message) => (
                 <div key={message.id} className={cn('flex flex-col gap-2', message.role === 'user' ? 'items-end' : 'items-start')}>
                   <motion.div
@@ -294,11 +294,11 @@ export default function AIChatButton() {
                   setShowTooltip(false);
                   setIsOpen(true);
                 }}
-                className="bg-amber-600 text-white p-4 md:p-5 rounded-full shadow-xl hover:shadow-2xl transition-all z-50 ring-4 ring-amber-100/50 dark:ring-amber-900/20"
+                className="bg-amber-600 text-white p-3.5 md:p-4 rounded-full shadow-xl hover:shadow-2xl transition-all z-50 ring-4 ring-amber-100/50 dark:ring-amber-900/20"
                 aria-label="Abrir chat"
               >
                 <div className="relative">
-                    <MessageSquare className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
+                    <MessageSquare className="w-5 h-5" strokeWidth={2.5} />
                     {!hasBeenClicked && (
                         <span className="absolute -top-1 -right-1 flex h-3 w-3">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

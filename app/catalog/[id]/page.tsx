@@ -265,11 +265,11 @@ export default function PerfumeDetailPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="hero-section relative min-h-screen flex items-center overflow-hidden">
+      <section className="hero-section relative min-h-[100dvh] flex items-start md:items-center overflow-hidden pt-28 md:pt-12 md:pb-12">
         <div className="bg-gradient absolute inset-0 bg-gradient-to-br from-emerald-50 via-background to-amber-50 dark:from-emerald-950/20 dark:via-background dark:to-amber-950/20" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Image */}
             <motion.div
               initial={{ x: -100, opacity: 0 }}
@@ -296,35 +296,34 @@ export default function PerfumeDetailPage() {
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-              className="space-y-8"
+              className="space-y-8 px-6 md:px-16 lg:px-14"
             >
               <div className="detail-item">
                 <Badge variant="outline" className="mb-4 font-inter font-medium">
                   {perfume.brand}
                 </Badge>
-                <h1 className="font-cormorant font-bold text-4xl md:text-6xl mb-4 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text">
+                <h1 className="font-cormorant font-bold text-4xl md:text-6xl mb-4 bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
                   {perfume.name}
                 </h1>
-                <p className="font-inter text-xl text-muted-foreground mb-6">{perfume.description}</p>
+                <p className="font-inter text-lg md:text-xl text-muted-foreground mb-6 break-words">{perfume.description}</p>
               </div>
 
-              <div className="detail-item flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="detail-item flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                 <span className="font-inter">{perfume.gender}</span>
-                <Separator orientation="vertical" className="h-4" />
+                <Separator orientation="vertical" className="h-4 hidden sm:block" />
                 <span className="font-inter">{perfume.family}</span>
-                <Separator orientation="vertical" className="h-4" />
+                <Separator orientation="vertical" className="h-4 hidden sm:block" />
                 <span className="font-inter">{perfume.size}</span>
               </div>
 
               <div className="detail-item">
-                <div className="flex items-center justify-center mb-6">
-                  <span className="font-cormorant font-bold text-4xl text-emerald-600 dark:text-emerald-400">
+                <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-6 w-full mt-4">
+                  <span className="font-cormorant font-bold text-4xl text-emerald-600 dark:text-emerald-400 ml-6">
                     ${perfume.price.toLocaleString()}
                   </span>
-                </div>
-                
+
                 <Button
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                  className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white"
                   size="lg"
                   onClick={() => {
                     addToCart(perfume, 1)
@@ -336,17 +335,19 @@ export default function PerfumeDetailPage() {
                   <ShoppingCart className="w-5 h-5 mr-2" />
                   Agregar al Carrito
                 </Button>
+                </div>
+                
               </div>
 
-              <div className="detail-item grid grid-cols-2 gap-4">
+              <div className="detail-item grid grid-cols-1 sm:grid-cols-2 gap-4 pb-28 md:pb-0">
                 <Card>
-                  <CardContent className="p-4 text-center">
+                  <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
                     <p className="font-inter font-medium text-sm text-muted-foreground mb-1">Concentración</p>
                     <p className="font-cormorant font-medium">{perfume.concentration}</p>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="p-4 text-center">
+                  <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
                     <p className="font-inter font-medium text-sm text-muted-foreground mb-1">Duración</p>
                     <p className="font-cormorant font-medium">{perfume.longevity || "Moderada"}</p>
                   </CardContent>
@@ -358,7 +359,7 @@ export default function PerfumeDetailPage() {
       </section>
 
       {/* Notes Section */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -376,7 +377,7 @@ export default function PerfumeDetailPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 mx-10">
             {/* Top Notes */}
             <Card className="relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
@@ -459,7 +460,7 @@ export default function PerfumeDetailPage() {
       </section>
 
       {/* Story Section */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="py-20 px-8 bg-muted/30">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -586,6 +587,9 @@ export default function PerfumeDetailPage() {
           </div>
         </div>
       </section>
+      
+      {/* Extra space at the bottom for floating buttons on mobile */}
+      <div className="h-24 md:h-0 w-full" />
     </motion.div>
   )
 }

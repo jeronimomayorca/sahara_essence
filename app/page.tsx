@@ -145,7 +145,7 @@ export default function HomePage() {
               className="flex flex-col items-center md:items-start text-center md:text-left"
             >
               <h1 className="font-cormorant flex flex-col items-center pb-24 drop-shadow-2xl text-amber-600 dark:text-amber-400">
-                <span className="text-7xl md:text-9xl font-bold leading-none">SAHARA</span>
+                <span className="text-6xl md:text-8xl lg:text-9xl font-bold leading-none">SAHARA</span>
                 <div className="flex items-center gap-4 w-full mt-2 opacity-90">
                   <div className="h-[1px] flex-1 bg-amber-600/50 dark:bg-amber-400/50" />
                   <span className="text-2xl md:text-3xl font-medium tracking-[0.3em] uppercase">Essence</span>
@@ -156,8 +156,8 @@ export default function HomePage() {
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 md:gap-6 mt-20 md:mt-0">
                 <Link href="/catalog">
                   <Button 
-                    size="lg" 
-                    className="magnetic-button bg-amber-600 hover:bg-amber-700 text-white rounded-full px-6 py-5 md:px-10 md:py-8 text-lg md:text-xl font-medium border-none shadow-xl"
+                    size="sm" 
+                    className="magnetic-button bg-amber-600 hover:bg-amber-700 text-white rounded-full px-6 py-5 md:px-10 md:py-8 text-md md:text-lg font-medium border-none shadow-xl"
                   >
                     Explorar Catálogo
                     <ArrowRight className="ml-2 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
@@ -165,9 +165,9 @@ export default function HomePage() {
                 </Link>
                 <Link href="/#sobre-nosotros">
                   <Button 
-                    size="lg" 
+                    size="sm" 
                     variant="outline"
-                    className="glass-luxury text-white hover:bg-white/20 rounded-full px-6 py-5 md:px-10 md:py-8 text-lg md:text-xl font-medium border-white/30 backdrop-blur-md"
+                    className="glass-luxury text-white hover:bg-white/20 rounded-full px-6 py-5 md:px-10 md:py-8 text-md md:text-lg font-medium border-white/30 backdrop-blur-md"
                   >
                     Nuestra Historia
                   </Button>
@@ -185,7 +185,7 @@ export default function HomePage() {
 
       {/* Best Sellers Bento Grid Section */}
       <section className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="md:max-w-2xl lg:max-w-5xl mx-auto">
           <div ref={addToRefs}>
             <h2 className="font-cormorant font-medium text-4xl md:text-6xl mb-4 text-center text-amber-600 dark:text-amber-400">
               Los Perfumes Más Vendidos
@@ -194,11 +194,11 @@ export default function HomePage() {
               Descubre nuestras colecciones más populares, cuidadosamente seleccionadas para cada estilo
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-10">
               {/* Perfumes Árabes - Large Card */}
               <Link
                 href="/catalog?family=Oriental"
-                className="group lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] via-[#958672] to-[#635a4b] p-5 md:p-8 hover:scale-[1.02] transition-transform duration-500 shadow-xl min-h-[320px] sm:min-h-[350px]"
+                className="group md:col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#635a4b] via-[#958672] to-[#635a4b] p-5 md:p-8 hover:scale-[1.02] transition-transform duration-500 shadow-xl min-h-[320px] sm:min-h-[350px]"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between">
                   <div className="glass-luxury p-5 md:p-6 rounded-2xl inline-block max-w-[90%] md:max-w-fit">
@@ -221,7 +221,7 @@ export default function HomePage() {
               {/* Perfumes para Hombre */}
               <Link
                 href="/catalog?gender=Masculino"
-                className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#cab195] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
+                className="group md:col-span-1 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] to-[#cab195] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
                   <div className="glass-luxury p-3.5 md:p-4 rounded-xl">
@@ -265,7 +265,7 @@ export default function HomePage() {
               {/* Unisex */}
               <Link
                 href="/catalog?gender=Unisex"
-                className="group lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] via-[#cab195] to-[#f9dfbd] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
+                className="group md:col-span-2 lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#958672] via-[#cab195] to-[#f9dfbd] p-5 md:p-6 hover:scale-[1.02] transition-transform duration-500 shadow-lg"
               >
                 <div className="relative z-10 h-full flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
                   <div className="glass-luxury p-4 md:p-5 rounded-xl max-w-[240px] md:max-w-[280px]">
@@ -290,7 +290,7 @@ export default function HomePage() {
 
       {/* Featured Perfumes Carousel Section */}
       <section className="py-24 px-4 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div ref={addToRefs}>
             <h2 className="font-cormorant font-medium text-4xl md:text-6xl mb-4 text-center text-amber-600 dark:text-amber-400">
               Fragancias Destacadas
@@ -307,7 +307,7 @@ export default function HomePage() {
                 }}
                 className="w-full"
               >
-                <CarouselContent className="-ml-4">
+                <CarouselContent className="sm:m-20 md:m-20 lg:m-0">
                   {randomPerfumes.map((perfume) => (
                     <CarouselItem key={perfume.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
                       <Link href={`/catalog/${perfume.id}`}>
