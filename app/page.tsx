@@ -305,11 +305,11 @@ export default function HomePage() {
                   align: "start",
                   loop: true,
                 }}
-                className="w-full"
+                className="w-full pb-20 md:pb-0"
               >
                 <CarouselContent className="sm:m-20 md:m-20 lg:m-0">
                   {randomPerfumes.map((perfume) => (
-                    <CarouselItem key={perfume.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <CarouselItem key={perfume.id} className="pl-4 basis-[85%] sm:basis-2/3 md:basis-1/2 lg:basis-1/3">
                       <Link href={`/catalog/${perfume.id}`}>
                         <Card className="group overflow-hidden border-2 hover:border-amber-600 dark:hover:border-amber-400 transition-all duration-300 hover:shadow-2xl">
                           <CardContent className="p-0">
@@ -318,25 +318,25 @@ export default function HomePage() {
                                 src={getPerfumeImageUrl(perfume.image)}
                                 alt={perfume.name}
                                 fill
-                                className="object-contain p-8 group-hover:scale-110 transition-transform duration-500"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="object-contain p-6 md:p-8 group-hover:scale-110 transition-transform duration-500"
+                                sizes="(max-width: 768px) 85vw, (max-width: 1200px) 50vw, 33vw"
                               />
                             </div>
-                            <div className="p-6">
-                              <p className="font-inter text-sm text-amber-600 dark:text-amber-400 mb-2">
+                            <div className="p-4 md:p-6">
+                              <p className="font-inter text-xs md:text-sm text-amber-600 dark:text-amber-400 mb-2">
                                 {perfume.brand}
                               </p>
-                              <h3 className="font-cormorant font-medium text-xl mb-3 line-clamp-2">
+                              <h3 className="font-cormorant font-medium text-lg md:text-xl mb-2 md:mb-3 line-clamp-2">
                                 {perfume.name}
                               </h3>
-                              <p className="font-inter text-sm text-muted-foreground mb-4 line-clamp-2">
+                              <p className="font-inter text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 line-clamp-2">
                                 {perfume.description}
                               </p>
                               <div className="flex items-center justify-between">
-                                <p className="font-inter font-bold text-2xl text-emerald-600 dark:text-emerald-400">
+                                <p className="font-inter font-bold text-xl md:text-2xl text-emerald-600 dark:text-emerald-400">
                                   ${perfume.price.toLocaleString()}
                                 </p>
-                                <ArrowRight className="w-5 h-5 text-amber-600 dark:text-amber-400 group-hover:translate-x-2 transition-transform" />
+                                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-amber-600 dark:text-amber-400 group-hover:translate-x-2 transition-transform" />
                               </div>
                             </div>
                           </CardContent>

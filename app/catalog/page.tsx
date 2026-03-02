@@ -67,6 +67,7 @@ function CatalogContent() {
   const [sortBy, setSortBy] = useState<SortOption>(() => (searchParams.get('sort') as SortOption) || 'name-asc')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [perfumes, setPerfumes] = useState<Perfume[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
@@ -89,21 +90,28 @@ function CatalogContent() {
   // Cargar perfumes desde Supabase
   useEffect(() => {
     async function loadPerfumes() {
+      setIsLoading(true)
       try {
+        console.log('Fetching perfumes...')
+        // Optimizamos la consulta seleccionando solo los campos necesarios para el catálogo
+        // Evitamos traer campos pesados como 'description', 'story' o 'embedding'
         const { data, error } = await supabase
           .from('perfumes')
-          .select('*')
+          .select('id, name, brand, gender, family, notes, size, price, image, concentration')
           .order('name', { ascending: true })
 
         if (error) {
           console.error('Error loading perfumes:', error)
           setPerfumes([])
         } else {
+          console.log(`Loaded ${data?.length || 0} perfumes`)
           setPerfumes(data || [])
         }
       } catch (err) {
         console.error('Error:', err)
         setPerfumes([])
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -369,73 +377,88 @@ function CatalogContent() {
 
       {/* Products Grid */}
       <div className="max-w-2xl lg:max-w-6xl mx-auto px-4 py-6 md:py-8">
-        <AnimatePresence mode="wait">
+        {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 md:gap-6">
-            {paginatedPerfumes.map((perfume) => (
-              <motion.div
-                key={perfume.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <Link href={`/catalog/${perfume.id}`}>
-                  <Card className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card">
-                    <CardContent className="p-0">
-                      <div className="relative aspect-[3/3] overflow-hidden">
-                        <Image
-                          src={getPerfumeImageUrl(perfume.image)}
-                          alt={perfume.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          priority={perfumes.indexOf(perfume) < 4}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap gap-1">
-                              {parseNotes(perfume.notes).slice(0, 3).map((note, i) => (
-                                <Badge
-                                  key={i}
-                                  variant="secondary"
-                                  className="text-xs bg-white/20 text-white border-white/30"
-                                >
-                                  {note}
-                                </Badge>
-                              ))}
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="space-y-4 animate-pulse">
+                <div className="aspect-[3/3] bg-muted rounded-xl" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-muted rounded w-1/2" />
+                  <div className="h-6 bg-muted rounded w-3/4" />
+                  <div className="h-4 bg-muted rounded w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 md:gap-6">
+              {paginatedPerfumes.map((perfume) => (
+                <motion.div
+                  key={perfume.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Link href={`/catalog/${perfume.id}`}>
+                    <Card className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card">
+                      <CardContent className="p-0">
+                        <div className="relative aspect-[3/3] overflow-hidden">
+                          <Image
+                            src={getPerfumeImageUrl(perfume.image)}
+                            alt={perfume.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            priority={perfumes.indexOf(perfume) < 4}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div className="space-y-2">
+                              <div className="flex flex-wrap gap-1">
+                                {parseNotes(perfume.notes).slice(0, 3).map((note, i) => (
+                                  <Badge
+                                    key={i}
+                                    variant="secondary"
+                                    className="text-xs bg-white/20 text-white border-white/30"
+                                  >
+                                    {note}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="p-3 md:p-6">
-                        <div className="mb-1 md:mb-2">
-                          <Badge variant="outline" className="text-[10px] md:text-xs font-inter font-medium px-1.5 py-0 md:px-2.5 md:py-0.5">
-                            {perfume.brand}
-                          </Badge>
+                        <div className="p-3 md:p-6">
+                          <div className="mb-1 md:mb-2">
+                            <Badge variant="outline" className="text-[10px] md:text-xs font-inter font-medium px-1.5 py-0 md:px-2.5 md:py-0.5">
+                              {perfume.brand}
+                            </Badge>
+                          </div>
+                          <h3 className="font-cormorant font-medium text-base md:text-xl mb-1 md:mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
+                            {perfume.name}
+                          </h3>
+                          <div className="flex items-center justify-between text-[10px] md:text-sm text-muted-foreground mb-1 md:mb-3">
+                            <span className="font-inter">{perfume.gender}</span>
+                            <span className="font-inter">{perfume.size}</span>
+                          </div>
+                          <p className="font-inter text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4 line-clamp-1">{perfume.family}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="font-cormorant font-medium text-lg md:text-2xl text-emerald-600 dark:text-emerald-400">
+                              ${perfume.price.toLocaleString()}
+                            </span>
+                          </div>
                         </div>
-                        <h3 className="font-cormorant font-medium text-base md:text-xl mb-1 md:mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
-                          {perfume.name}
-                        </h3>
-                        <div className="flex items-center justify-between text-[10px] md:text-sm text-muted-foreground mb-1 md:mb-3">
-                          <span className="font-inter">{perfume.gender}</span>
-                          <span className="font-inter">{perfume.size}</span>
-                        </div>
-                        <p className="font-inter text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4 line-clamp-1">{perfume.family}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="font-cormorant font-medium text-lg md:text-2xl text-emerald-600 dark:text-emerald-400">
-                            ${perfume.price.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </AnimatePresence>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </AnimatePresence>
+        )}
 
-        {filteredPerfumes.length === 0 && (
+        {!isLoading && filteredPerfumes.length === 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <Search className="w-12 h-12 text-muted-foreground" />

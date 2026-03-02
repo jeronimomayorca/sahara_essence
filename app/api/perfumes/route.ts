@@ -14,7 +14,8 @@ export async function GET(request: Request) {
     const brand = searchParams.get('brand')
     const limit = searchParams.get('limit')
 
-    let query = supabase.from('perfumes').select('*')
+    // Seleccionamos solo los campos necesarios para evitar traer el 'embedding' que es pesado
+    let query = supabase.from('perfumes').select('id, name, brand, gender, family, notes, size, price, image, concentration, description')
 
     // Aplicar filtros si existen
     if (gender && gender !== 'Todos') {

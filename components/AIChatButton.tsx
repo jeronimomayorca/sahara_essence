@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn, getPerfumeImageUrl } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
@@ -22,6 +22,79 @@ type Message = {
   role: 'user' | 'assistant';
   timestamp: Date;
   data?: Product[];
+};
+
+const ProductCarousel = ({ products, onProductClick }: { products: Product[], onProductClick: () => void }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = window.innerWidth < 768 ? 192 : 216; // Adjusted card width + gap
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  return (
+    <div className="relative group/slider w-full mt-3">
+      {products.length > 1 && (
+        <button 
+          onClick={() => scroll('left')}
+          className="absolute left-2 md:left-3 top-[45%] -translate-y-1/2 z-20 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-200 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-600 opacity-0 group-hover/slider:opacity-100 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-110 active:scale-95"
+          aria-label="Desplazar a la izquierda"
+        >
+          <ChevronLeft size={20} />
+        </button>
+      )}
+      
+      <div 
+        ref={scrollRef}
+        className="flex gap-3 md:gap-4 overflow-x-auto pb-4 w-full max-w-full px-2 md:px-4 snap-x no-scrollbar scroll-smooth relative"
+      >
+        {products.map((product) => (
+          <Link 
+            key={product.id} 
+            href={`/catalog/${product.id}`}
+            onClick={onProductClick}
+            className="min-w-[180px] max-w-[180px] md:min-w-[200px] md:max-w-[200px] bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 snap-center hover:shadow-xl transition-all duration-300 group flex flex-col cursor-pointer"
+          >
+            <div className="relative h-32 md:h-36 w-full bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                {product.image ? (
+                     <Image 
+                        src={getPerfumeImageUrl(product.image)} 
+                        alt={product.name} 
+                        fill 
+                        className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                        sizes="(max-width: 768px) 180px, 200px" 
+                     />
+                ) : (
+                     <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs p-4 text-center">Imagen no disponible</div>
+                )}
+            </div>
+            <div className="p-3 md:p-4 flex-1 flex flex-col">
+                <div className="text-[10px] md:text-xs text-amber-600 dark:text-amber-500 font-semibold mb-1 uppercase tracking-wider">{product.brand}</div>
+                <div className="font-bold text-sm md:text-base text-gray-900 dark:text-white truncate" title={product.name}>{product.name}</div>
+                <div className="text-xs mt-2 text-gray-600 dark:text-gray-400 bg-amber-50/50 dark:bg-amber-900/10 p-2.5 rounded-xl leading-relaxed border border-amber-100/50 dark:border-amber-900/20 line-clamp-3">
+                  ✨ {product.reason}
+                </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {products.length > 1 && (
+        <button 
+          onClick={() => scroll('right')}
+          className="absolute right-2 md:right-3 top-[45%] -translate-y-1/2 z-20 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-200 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-600 opacity-0 group-hover/slider:opacity-100 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-110 active:scale-95"
+          aria-label="Desplazar a la derecha"
+        >
+          <ChevronRight size={20} />
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default function AIChatButton() {
@@ -75,6 +148,19 @@ export default function AIChatButton() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isOpen]);
+
+  // Lock body scroll when chat is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +236,7 @@ export default function AIChatButton() {
         )}
       </AnimatePresence>
       
-      <div className="fixed bottom-6 md:bottom-10 right-4 md:right-5 z-50">
+      <div className={cn("fixed z-50 transition-all duration-300", isOpen ? "bottom-4 right-4 md:bottom-10 md:right-10 flex flex-col justify-end" : "bottom-6 right-4 md:bottom-10 md:right-10")}>
         <AnimatePresence mode="wait">
           {isOpen ? (
           <motion.div
@@ -159,7 +245,7 @@ export default function AIChatButton() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'tween', duration: 0.2 }}
-            className="relative w-[90vw] sm:w-100 md:w-[30rem] max-w-[95vw] h-[80vh] max-h-[700px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700"
+            className="relative w-[calc(100vw-2rem)] sm:w-[28rem] md:w-[32rem] lg:w-[36rem] h-[88vh] sm:h-[80vh] max-h-[850px] bg-white dark:bg-gray-900 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col border border-gray-200/60 dark:border-gray-700"
           >
             {/* Header */}
             <div className="bg-amber-600 p-4 text-white flex justify-between items-center shadow-md z-10">
@@ -207,36 +293,9 @@ export default function AIChatButton() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="flex gap-3 overflow-x-auto pb-4 w-full max-w-full px-1 snap-x no-scrollbar"
+                        className="w-full max-w-full"
                       >
-                          {message.data.map((product) => (
-                              <Link 
-                                key={product.id} 
-                                href={`/catalog/${product.id}`}
-                                className="min-w-[200px] max-w-[200px] bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl overflow-hidden shadow-sm flex-shrink-0 snap-center hover:shadow-md transition-shadow group flex flex-col cursor-pointer"
-                              >
-                                  <div className="relative h-32 w-full bg-gray-100 dark:bg-gray-900 group-hover:scale-105 transition-transform duration-500">
-                                      {product.image ? (
-                                           <Image 
-                                              src={getPerfumeImageUrl(product.image)} 
-                                              alt={product.name} 
-                                              fill 
-                                              className="object-cover" 
-                                              sizes="(max-width: 768px) 100vw, 200px" 
-                                           />
-                                      ) : (
-                                           <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs p-4 text-center">Imagen no disponible</div>
-                                      )}
-                                  </div>
-                                  <div className="p-3">
-                                      <div className="text-xs text-amber-600 dark:text-amber-500 font-medium mb-0.5">{product.brand}</div>
-                                      <div className="font-bold text-sm text-gray-900 dark:text-white truncate" title={product.name}>{product.name}</div>
-                                      <div className="text-xs mt-2 text-gray-600 dark:text-gray-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg leading-snug border border-amber-100 dark:border-amber-900/30">
-                                        ✨ {product.reason}
-                                      </div>
-                                  </div>
-                              </Link>
-                          ))}
+                         <ProductCarousel products={message.data} onProductClick={() => setIsOpen(false)} />
                       </motion.div>
                   )}
                 </div>
