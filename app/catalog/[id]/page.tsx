@@ -85,7 +85,7 @@ export default function PerfumeDetailPage() {
 
           // Normalize notes → clean {top, middle, base} using parseNotes per key
 
-          const rawNotes = data.notes
+          const rawNotes = (data as any).notes
           let parsedNotes: any = rawNotes
 
           // Attempt to parse stringified JSON manually to preserve structure
@@ -171,8 +171,8 @@ export default function PerfumeDetailPage() {
           normalizedPerfume.notes = notesObj
 
           // Normalize occasion and season into clean string arrays
-          normalizedPerfume.occasion = parseItems(data.occasion);
-          normalizedPerfume.season = parseItems(data.season);
+          normalizedPerfume.occasion = parseItems((data as any).occasion);
+          normalizedPerfume.season = parseItems((data as any).season);
 
           setPerfume(normalizedPerfume as Perfume)
         }

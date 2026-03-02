@@ -22,7 +22,8 @@ const customsearch = google.customsearch('v1')
 
 // Rutas
 const IMAGES_DIR = path.join(process.cwd(), 'public', 'perfume_images')
-const MCP_SERVER_PATH = 'C:/users/mayor/documents/10_workspace/mcp_servers/image_processor/main.py'
+const MCP_SERVER_DIR = 'C:/users/mayor/documents/10_workspace/mcp_servers/image_processor'
+const MCP_SERVER_PATH = path.join(MCP_SERVER_DIR, 'main.py')
 const TEMP_DIR = path.join(process.cwd(), 'tmp_images')
 
 // Helper format string into valid filename slug
@@ -31,7 +32,12 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
 async function setupMcpClient() {
   const transport = new StdioClientTransport({
     command: 'uv',
-    args: ['run', MCP_SERVER_PATH]
+    args: [
+      '--directory', 
+      MCP_SERVER_DIR, 
+      'run', 
+      'main.py'
+    ]
   })
   
   const mcpClient = new Client({
@@ -140,13 +146,13 @@ async function run() {
       }) as any
       
       if (!downloadResult.content[0].text.includes('"success": true') && !downloadResult.content[0].text.includes("'success': True")) {
-         const parsed = JSON.parse(downloadResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, match => match.toLowerCase()));
+         const parsed = JSON.parse(downloadResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, (match: string) => match.toLowerCase()));
          console.log(`  -> ❌ Error al descargar:`, parsed.error)
          continue
       }
       
       // We parse the non-standard python dict string to JS
-      const cleanedJson = downloadResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, match => match.toLowerCase().replace(/None/g, "null"))
+      const cleanedJson = downloadResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, (match: string) => match.toLowerCase().replace(/None/g, "null"))
       const dlData = JSON.parse(cleanedJson)
       const downloadedPath = dlData.file_path;
       console.log(`     (Guardado en ${downloadedPath})`)
@@ -157,7 +163,7 @@ async function run() {
         name: 'remove_bg',
         arguments: { input_path: downloadedPath }
       }) as any
-      const bgData = JSON.parse(bgResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, match => match.toLowerCase()))
+      const bgData = JSON.parse(bgResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, (match: string) => match.toLowerCase()))
       if (!bgData.success) throw new Error(bgData.error)
 
       // 3. Resize
@@ -171,7 +177,7 @@ async function run() {
             maintain_aspect_ratio: true 
          }
       }) as any
-      const resData = JSON.parse(resResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, match => match.toLowerCase()))
+      const resData = JSON.parse(resResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, (match: string) => match.toLowerCase()))
       if (!resData.success) throw new Error(resData.error)
 
       // 4. Convert to WEBP
@@ -186,7 +192,7 @@ async function run() {
            output_path: webpTempPath
         }
       }) as any
-      const convData = JSON.parse(convResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, match => match.toLowerCase()))
+      const convData = JSON.parse(convResult.content[0].text.replace(/'/g, '"').replace(/True|False/gi, (match: string) => match.toLowerCase()))
       if (!convData.success) throw new Error(convData.error)
 
       // 5. Move to final location

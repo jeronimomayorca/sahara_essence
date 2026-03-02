@@ -236,7 +236,7 @@ export default function AIChatButton() {
         )}
       </AnimatePresence>
       
-      <div className={cn("fixed z-50 transition-all duration-300", isOpen ? "bottom-4 right-4 md:bottom-10 md:right-10 flex flex-col justify-end" : "bottom-6 right-4 md:bottom-10 md:right-10")}>
+      <div className={cn("fixed z-50 transition-all duration-300", isOpen ? "bottom-4 right-5 md:bottom-10 md:right-5 flex flex-col justify-end" : "bottom-6 right-5 md:bottom-10 md:right-5")}>
         <AnimatePresence mode="wait">
           {isOpen ? (
           <motion.div

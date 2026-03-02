@@ -32,3 +32,14 @@ google-credentials.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated images and temps
+/public/perfume_images/
+/tmp_images/
+
+# local logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
